@@ -10,7 +10,7 @@ Credits: This whole thing was inspired by the youtube channel "**tight**", which
 ## Overview
 
 To do - make a proper drawing of the system...
-<img src="vodak32sketch.jpg" alt="Overview" width="1080">
+<img src="vodak32sketch.jpg" alt="Overview" width="976">
 
 ## Materials List
 
@@ -21,12 +21,12 @@ To do - make a proper drawing of the system...
 - 2 x 12V solenoid valves 
 - 6 x DS18B20 temperature sensors
 - 10m teflon heater wire
-- 1 x 10L "keg" (plastic water bottles you get free with drinking water) 
+- 1 x 10L "keg" (plastic water containers you get free with drinking water) 
 - a bunch of hose and barbs (details to follow)
 - some insulation and aluminum foil
 
 (the fermenter parts)
-- 3 x 10L "kegs" (plastic water bottles you get free with drinking water)
+- 3 x 10L "kegs" (plastic water containers you get free with drinking water)
 - 2 x 1L soda bottles (the schweppes kind have a nice shape)
 - 3 x 12V solenoid valves
 - 2 x DS18B20  temperature sensors
