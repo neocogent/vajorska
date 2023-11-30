@@ -17,7 +17,7 @@ To do - make a proper drawings of the system...
 
 (the still parts)
 - 1.5m x 25mm copper pipe ("the column")
-- 30m x 1/2" copper tubing, annealed ("the stripper coil")
+- 3m x 1/2" copper tubing, annealed ("the stripper coil")
 - 500ml stainless steel bottle ("the steam generator")
 - 2 x 12V solenoid valves 
 - 6 x DS18B20 temperature sensors
