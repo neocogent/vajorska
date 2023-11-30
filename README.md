@@ -7,6 +7,6 @@ Goal: Build a small "personal" still which can run on low power, off grid, solar
 
 Credits: This whole thing was inspired by the youtube channel "**tight**", which provide videos desscribing the fundamentals of the continuous process as implemented for a small still capable of non-stop operation producing around 1L/day 96% ethanol output. I have merely taken his technical info and massaged it into a small "package" prioritising low power and adding continuous fermentation stages.
 
-# Overview
+## Overview
 
 To do.
