@@ -14,11 +14,23 @@ A work in progress... I've ordered parts and while waiting I am fleshing out the
 <img src="docs/vodak_overview.jpg" alt="Overview" width="1000">
 <img src="docs/vodak_control.jpg" alt="Control" width="1000">
 
+## Web App
+
+Simple Web interface using JSON to interact with server backend in ESP32.
+
+Modes:
+- Auto - monitors solar and manages state transitions to best optimize still output
+- Manual - user can view info and set control values
+- Config - wifi settings and system parameters, calibrate valve flow timings
+
+(visual layout to follow)
+
 ## Materials List
 
 (the still parts)
 - 1.5m x 25mm copper pipe ("the column")
 - 3m x 1/2" copper tubing, annealed ("the stripper coil")
+- 34cm x 1/2" copper pipe, a couple elbows and 20mm joiner
 - 500ml stainless steel bottle ("the steam generator")
 - 2 x 12V solenoid valves 
 - 6 x DS18B20 temperature sensors
