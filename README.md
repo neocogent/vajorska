@@ -10,8 +10,8 @@ Credits: This whole thing was inspired by the youtube channel "**tight**", which
 ## Overview
 
 To do - make a proper drawings of the system...
-<img src="vodak32overview.jpg" alt="Overview" width="976">
-<img src="vodak32control.jpg" alt="Control" width="976">
+<img src="vodak_overview.jpg" alt="Overview" width="1000">
+<img src="vodak32control.jpg" alt="Control" width="100">
 
 ## Materials List
 
