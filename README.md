@@ -11,8 +11,8 @@ A work in progress... I've ordered parts and while waiting I am fleshing out the
 
 ## Overview
 
-<img src="vodak_overview.jpg" alt="Overview" width="1000">
-<img src="vodak_control.jpg" alt="Control" width="1000">
+<img src="docs/vodak_overview.jpg" alt="Overview" width="1000">
+<img src="docs/vodak_control.jpg" alt="Control" width="1000">
 
 ## Materials List
 
