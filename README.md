@@ -11,7 +11,7 @@ Credits: This whole thing was inspired by the youtube channel "**tight**", which
 
 To do - make a proper drawings of the system...
 <img src="vodak_overview.jpg" alt="Overview" width="1000">
-<img src="vodak32control.jpg" alt="Control" width="100">
+<img src="vodak32control.jpg" alt="Control" width="1000">
 
 ## Materials List
 
