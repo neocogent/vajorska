@@ -1,0 +1,87 @@
+Key Features:
+      • CPU and Memory: Xtensa® 32-bit LX6 Dua-core processor, up to 600 DMIPS.
+      • 448 KByte ROM
+      • 520 KByte SRAM
+      • 16 KByte SRAM in RTC.
+      • QSPI can connect up to 4* Flash/SRAM, each flash should be less than 16 Mbytes.
+      • Supply Voltage: 2.2V~3.6V
+WIFI
+      •  802.11 b/g/n/e/i
+      • 802.11 n (2.4 GHz), up to 150 Mbps
+      • 802.11 e: QoS for wireless multimedia technology.
+      • WMM-PS, UAPSD
+      • MPDU and A-MSDU aggregation
+      • Block ACK
+      • Fragmentation and defragmentation
+      • Automatic Beacon monitoring/scanning
+      • 802.11 i security features: pre-authentication and TSN
+      • Wi-Fi Protected Access (WPA)/WPA2/WPA2-Enterprise/Wi-Fi Protected Setup (WPS)
+      • Infrastructure BSS Station mode/SoftAP mode
+      • Wi-Fi Direct (P2P), P2P Discovery, P2P Group Owner mode and P2P Power Management
+      • UMA compliant and certified
+      • Antenna diversity and selection
+Bluetooth:
+      • Compliant with Bluetooth v4.2 BR/EDR and BLE specification
+      • Class-1, class-2 and class-3 transmitter without external power amplifier
+      • Enhanced power control
+      • +10 dBm transmitting power
+      • NZIF receiver with -98 dBm sensitivity
+      • Adaptive Frequency Hopping (AFH)
+      • Standard HCI based on SDIO/SPI/UART High speed UART HCI, up to 4 Mbps
+      • BT 4.2 controller and host stack
+      • Service Discover Protocol (SDP)
+      • General Access Profile (GAP)
+      • Security Manage Protocol (SMP)
+      • Bluetooth Low Energy (BLE)
+      • ATT/GATT
+      • HID
+      • All GATT-based profile supported
+      • SPP-Like GATT-based profile
+      • BLE Beacon
+      • A2DP/AVRCP/SPP, HSP/HFP, RFCOMM
+      • CVSD and SBC for audio codec
+      • Bluetooth Piconet and Scatternet
+Clocks and timer
+      • Internal 8 MHz oscillator with calibration
+      • Internal RC oscillator with calibration
+      • External 2 MHz to 40 MHz crystal oscillator
+      • External 32 kHz crystal oscillator for RTC with calibration
+      • Two timer groups, including 2 x 64-bit timers and 1 x main watchdog in each group
+      • RTC watchdog
+Peripheral interface:
+      • 12-bit SAR ADC up to 18 channels
+      • 2 × 8-bit D/A converters
+      • 10 × touch sensors
+      • Temperature sensor
+      • 4 × SPI, 2 × I2S, 2 × I2C, 3 × UART
+      • 1 host (SD/eMMC/SDIO), 1 slave (SDIO/SPI)
+      • Ethernet MAC interface with dedicated DMA and IEEE 1588 suppor
+      • CAN 2.0
+      • IR (TX/RX)
+      • Motor PWM, LED PWM up to 16 channels
+      • Hall sensor
+      • Ultra low power analog pre-amplifier
+Security:
+      • IEEE 802.11 standard security features all supported, including WFA, WPA/WPA2 and WAPI
+      • Secure boot
+      • Flash encryption
+      • 1024-bit OTP, up to 768-bit for customers
+      • Cryptographic hardware acceleration: -AES-HASH(SHA-2) library-RSA-ECC-Random Number   Generator (RNG)
+Development support:
+      • SDK Firmware for fast on-line programming
+      • Open source toolchains based on GCC
+Application:
+      • Generic low power IoT sensor hub
+      • Generic low power IoT loggers
+      Video streaming from camera
+      Over The Top (OTT) devices
+      • Music players - Internet music players - Audio streaming devices
+      • Wi-Fi enabled toys - Loggers - Proximity sensing toys
+      • Wi-Fi enabled speech recognition devices
+      • Audio headsets
+      • Smart power plugs
+      • Home automation
+      • Mesh network
+Size:
+       The size of ESP-32S Wifi module is 16mm x 24mm x 3mm.
+       The ESP-32S deploys 4MB SPI Flash with WSOP－8 package. It also uses 3DBi PCB antenna on board.
