@@ -26,9 +26,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.43740881"
-     inkscape:cx="397.7972"
-     inkscape:cy="561.25984"
+     inkscape:zoom="0.49227014"
+     inkscape:cx="375.80992"
+     inkscape:cy="571.84049"
      inkscape:window-width="1366"
      inkscape:window-height="737"
      inkscape:window-x="0"
@@ -760,5 +760,51 @@
          x="114.59725"
          y="258.25122"
          id="tspan85">Heater</tspan></text>
+    <g
+       id="g30">
+      <rect
+         style="fill:#de8787;stroke-width:0.117697;-inkscape-stroke:none"
+         id="rect2"
+         width="0.90744275"
+         height="3.0479865"
+         x="98.456039"
+         y="209.28064" />
+      <path
+         style="fill:#de8787;stroke-width:0.117697;-inkscape-stroke:none"
+         id="path30"
+         sodipodi:type="arc"
+         sodipodi:cx="98.803902"
+         sodipodi:cy="210.70038"
+         sodipodi:rx="1.1260012"
+         sodipodi:ry="1.1260012"
+         sodipodi:start="1.5940765"
+         sodipodi:end="1.5466776"
+         sodipodi:arc-type="slice"
+         d="m 98.777691,211.82607 a 1.1260012,1.1260012 0 0 1 -1.099717,-1.13856 1.1260012,1.1260012 0 0 1 1.125456,-1.11313 1.1260012,1.1260012 0 0 1 1.126388,1.11218 1.1260012,1.1260012 0 0 1 -1.098761,1.13949 l -0.02716,-1.12567 z" />
+    </g>
+    <g
+       id="g31"
+       transform="translate(19.597612,12.077145)"
+       style="fill:#e9afaf">
+      <rect
+         style="fill:#e9afaf;stroke-width:0.117697;-inkscape-stroke:none"
+         id="rect30"
+         width="0.90744275"
+         height="3.0479865"
+         x="98.456039"
+         y="209.28064" />
+      <path
+         style="fill:#e9afaf;stroke-width:0.117697;-inkscape-stroke:none"
+         id="path31"
+         sodipodi:type="arc"
+         sodipodi:cx="98.803902"
+         sodipodi:cy="210.70038"
+         sodipodi:rx="1.1260012"
+         sodipodi:ry="1.1260012"
+         sodipodi:start="1.5940765"
+         sodipodi:end="1.5466776"
+         sodipodi:arc-type="slice"
+         d="m 98.777691,211.82607 a 1.1260012,1.1260012 0 0 1 -1.099717,-1.13856 1.1260012,1.1260012 0 0 1 1.125456,-1.11313 1.1260012,1.1260012 0 0 1 1.126388,1.11218 1.1260012,1.1260012 0 0 1 -1.098761,1.13949 l -0.02716,-1.12567 z" />
+    </g>
   </g>
 </svg>
