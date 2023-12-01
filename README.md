@@ -17,6 +17,7 @@ A work in progress... I've ordered parts and while waiting I am fleshing out the
 ## Web App
 
 Simple Web interface using JSON to interact with server backend in ESP32.
+Optimized for mobile phone use.
 
 Modes:
 - Auto - monitors solar and manages state transitions to best optimize still output
