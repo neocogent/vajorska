@@ -1,0 +1,36 @@
+
+.container { width: 320px; padding:10px; background:#eef; }
+/*.centered {
+      position: fixed;
+      top: 25%;
+      left: 50%;
+      transform: translate(-50%, -25%);
+    }
+@media only screen and (max-device-height: 480px) {
+    .centered {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+}*/
+
+.row { margin-top: 5px; margin-left: -5px; }
+.btn-lg { margin:10px; }
+.chg { margin:1px; }
+.chg-btns { float: right; width:60px; }
+.readout { height:80px; background:url(readout.png) }
+.runinfo { float: left; margin: 0 8px; width: 75px; }
+
+#def-reflow, #def-curve { width:240px; text-align:left; }
+
+#reflowname, #curvename { width:240px; }
+#zone-count { width:70px; }
+#zoneline input { width: 50px; }
+#zoneline th { padding:6px; }
+#pt-count { width:70px; }
+#ptline { width:280px; }
+#ptline input { width: 60px; }
+
+#zoneline .table thead tr td { text-align: center; font-weight:700; }
+#ptline .table thead tr td { font-weight:700; }
