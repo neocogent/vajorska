@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# go to correct location first
+cd ~/Dev/vodak32/firmware
+
+# read the partition table from device and store
+esptool.py --port /dev/ttyUSB0 --baud 921600 read_flash 0x8000 0xc00 vodak32/build/ptable.img
+
+# dump the table as readable text
+utils/gen_esp32part.py vodak32/build/ptable.img
+

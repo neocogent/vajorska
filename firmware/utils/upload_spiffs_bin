@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# go to correct location first
+cd ~/Dev/vodak32/firmware
+
+# upload bin image to spiffs partition
+esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600  write_flash -z  0x290000 vodal32/build/vodak32.spiffs.bin

@@ -1,3 +1,0 @@
-!#/bin/bash
-
-mkspiffs -c data -b 4096 -p 256 -s 1441792 build/vodak32.spiffs.bin
