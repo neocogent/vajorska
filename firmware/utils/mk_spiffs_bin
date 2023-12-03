@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# go to correct location first
+cd ~/Dev/vodak32/firmware
+
+# sync any changes from www to spiffs data
+rsync -arP --existing www/* vodak32/data/
+
+# build the bin image
+mkspiffs -c vodak32/data -b 4096 -p 256 -s 1441792 vodak32/build/vodak32.spiffs.bin
