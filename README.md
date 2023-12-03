@@ -28,30 +28,7 @@ Modes:
 
 ## Materials List
 
-(the still parts)
-- 1.5m x 25mm copper pipe ("the column")
-- 3m x 1/2" copper tubing, annealed ("the stripper coil")
-- 34cm x 1/2" copper pipe, a couple elbows and 20mm joiner
-- 500ml stainless steel bottle ("the steam generator")
-- 2 x 12V solenoid valves 
-- 6 x DS18B20 temperature sensors
-- 10m teflon heater wire
-- 1 x 10L "keg" (plastic water containers you get free with drinking water) 
-- a bunch of hose and barbs (details to follow)
-- some insulation and aluminum foil
-
-(the fermenter parts)
-- 3 x 10L "kegs" (plastic water containers you get free with drinking water)
-- 2 x 1L soda bottles (the schweppes kind have a nice shape)
-- 3 x 12V solenoid valves
-- 2 x DS18B20  temperature sensors
-- more hose and barbs
-
-(the control box)
-- ESP32 WIFI / CPU board
-- LM2596 Buck converter module (set for 3.3V output)
-- 1 or 2 x MOSFET 4 module (1 for still, 1 for fermenter)
-- some connectors and wires to "tie the room together".
+A [LibreCalc worksheet](blob/master/docs/Materials%20List.ods) and [pdf](blob/master/docs/Materials%20List.pdf) are included detailing reqquired/optional build items and current cossts. You can use this to plug in your own costs and figure total build cost. For me it works out to under $100 USD.
 
 
 ... more to come ...
