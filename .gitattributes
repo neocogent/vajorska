@@ -1,0 +1,5 @@
+resources/*
+firmware/www/bootstrap*
+firmware/www/jquery*
+firmware/www/font-awesome*
+firmware/vodak32/data/*
