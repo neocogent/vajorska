@@ -1,0 +1,5 @@
+#!/bin/bash
+
+esptool.py --port /dev/ttyUSB0 --baud 921600 read_flash 0x8000 0xc00 build/ptable.img
+utils/gen_esp32part.py build/ptable.img
+
