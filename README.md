@@ -48,7 +48,7 @@ Modes:
 - more hose and barbs
 
 (the control box)
-- ESP32 CPU board
+- ESP32 WIFI / CPU board
 - LM2596 Buck converter module (set for 3.3V output)
 - 1 or 2 x MOSFET 4 module (1 for still, 1 for fermenter)
 - some connectors and wires to "tie the room together".
