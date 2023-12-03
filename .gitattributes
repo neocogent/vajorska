@@ -3,4 +3,5 @@ firmware/www/bootstrap* linguist-vendored
 firmware/www/jquery* linguist-vendored
 firmware/www/font-awesome* linguist-vendored
 firmware/vodak32/data/* linguist-vendored
+firmware/utils/gen_esp32part.py linguist-vendored
 firmware/vodak32/build/** linguist-generated
