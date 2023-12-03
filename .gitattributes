@@ -1,5 +1,6 @@
-resources/*
-firmware/www/bootstrap*
-firmware/www/jquery*
-firmware/www/font-awesome*
-firmware/vodak32/data/*
+resources/** linguist-vendored
+firmware/www/bootstrap* linguist-vendored
+firmware/www/jquery* linguist-vendored
+firmware/www/font-awesome* linguist-vendored
+firmware/vodak32/data/* linguist-vendored
+firmware/vodak32/build/** linguist-generated
