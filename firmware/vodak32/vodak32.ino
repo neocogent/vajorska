@@ -40,10 +40,10 @@
 #define XTRA_HEAT    13
 
 #define SENSOR_COUNT 8 // number of onewire devices on bus
-#define FLOW_COUNT  5 // number of valves
-#define SENSOR_UPDATE_SECS 10 // interval for sensor updates (secs)
-#define STATE_CYCLE_SECS  30 // interval for state machine cycle (secs)
-#define DEF_VOLTS_MAX  61.4 // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
+#define FLOW_COUNT   5 // number of valves
+#define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
+#define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
+#define DEF_VOLTS_MAX       61.4 // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 
 // the machine states
 #define STATE_SLEEP 	0
@@ -94,10 +94,28 @@ void IRAM_ATTR ticker()
     stateUpdate = true;
 }
 
+void stateUpdateSleep(void){
+  DBG_DEBUG("State [SLEEP] update.");
+}
+
+void stateUpdateHeatUp(void){
+  DBG_DEBUG("State [HEAT_UP] update.");
+}
+
+void stateUpdateCoolDn(void){
+  DBG_DEBUG("State [COOL_DN] update.");
+}
+
+void stateUpdateRun(void){
+  DBG_DEBUG("State [RUN] update.");
+}
+
+void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
+
 void setup() {
   // serial for log / debug output
   Serial.begin(115200); 
-  DBG_INFO("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
+  DBG_INFO("vodak32 - version %d.%d.%d", VER_MAJOR, VER_MINOR, VER_PATCH);
   
   // init GPIO pins
   pinMode(ONE_WIRE_BUS, INPUT);
@@ -125,10 +143,8 @@ void setup() {
 	  WiFi.mode(WIFI_STA);
     WiFi.begin(ssid.c_str(), password.c_str());
     DBG_INFO("Connecting to WiFi: %s", ssid.c_str());
-		while (secs++ < WIFI_TIMEOUT && WiFi.status() != WL_CONNECTED) {
+		while (secs++ < WIFI_TIMEOUT && WiFi.status() != WL_CONNECTED)
 			delay(1000);
-			DBG_INFO(".");
-		}
 		if(secs < WIFI_TIMEOUT) 
 			break;
 		DBG_WARNING("\nCannot connect. Creating AP: %s", ssid.c_str());
@@ -144,7 +160,7 @@ void setup() {
 		DBG_WARNING("AP failed. Starting over.");
 		secs = 0;
 	}
-	DBG_INFO("\nWiFi up at: %s", secs < WIFI_TIMEOUT ? WiFi.localIP() : WiFi.softAPIP());
+	DBG_INFO("WiFi up at: %s", secs < WIFI_TIMEOUT ? WiFi.localIP().toString() : WiFi.softAPIP().toString());
   
   // load temperature sensor ids 
   char key[4] = "Sx\0";
@@ -160,7 +176,7 @@ void setup() {
   numberOfSensors = sensors.getDeviceCount();
   DBG_INFO("Scanning temperature sensors. Found: %d", numberOfSensors);
   if(numberOfSensors != SENSOR_COUNT)
-    DBG_WARNING("Warning: Incorrect number of temperature sensors detected.");
+    DBG_WARNING("Incorrect number of temperature sensors detected.");
 
   // read config values
 	key[0] = 'F';
@@ -181,20 +197,26 @@ void setup() {
   // enable real time clock and ntp syncs
   struct tm timeinfo;
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  delay(2000);
   if(!getLocalTime(&timeinfo))
     DBG_WARNING("Failed to obtain time.");
   else
-		DBG_INFO("Time: %H:%M:%S", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+		DBG_INFO("Time: %d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
   server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){
 		AsyncResponseStream *response = request->beginResponseStream("application/json");
 		DynamicJsonBuffer jsonBuffer;
-		JsonObject &data = jsonBuffer.createObject();
-		data["heap"] = ESP.getFreeHeap(); // chg to get real state data
-		data["ssid"] = WiFi.softAPSSID();
-		data["ip"] = WiFi.localIP().toString();
+		JsonObject &data = jsonBuffer.createObject();  // holder for returning state data
+    JsonArray& temp = data.createNestedArray("temp");
+    for(int i=0; i < SENSOR_COUNT; i++)
+      temp.add(tempC[i]);
+		data["volts"] = volts_now;
+		data["state"] = stateNow;
+    JsonArray& flows = data.createNestedArray("flows");
+    for(int i=0; i < FLOW_COUNT; i++)
+      flows.add(flow_rates[i][2]);
 		data.printTo(*response);
 		request->send(response);
   });
@@ -222,18 +244,7 @@ void loop() {
     sensorUpdate = false;
   }
 	if(stateUpdate){ 
-		DBG_DEBUG("State update.");
-    switch(stateNow)
-    {
-			case STATE_SLEEP: // off, waiting on power, or start time
-				break;
-			case STATE_HEAT_UP: // preheating, heating up
-				break;
-			case STATE_COOL_DN: // power loss, or shutdown 
-				break;
-			case STATE_RUN: // maintain temperatures for production
-				break;
-		}
+    stateFuncs[stateNow]();
     stateUpdate = false;
 	}
 }
