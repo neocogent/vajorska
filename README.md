@@ -12,7 +12,8 @@ A work in progress... I've ordered parts and while waiting I am fleshing out the
 ## Overview
 
 <img src="docs/vodak_overview.jpg" alt="Overview" width="1000">
-<img src="docs/vodak_control.jpg" alt="Control" width="1000">
+<img src="docs/vodak_control.jpg" alt="Control Box" width="1000">
+<img src="docs/vodak_states.jpg" alt="State Diagram" width="1000">
 
 ## Web App
 

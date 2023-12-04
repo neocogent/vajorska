@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="250mm"
+   height="176mm"
+   viewBox="0 0 250 176"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
+   sodipodi:docname="vodak_states.svg"
+   inkscape:export-filename="vodak_states.jpg"
+   inkscape:export-xdpi="200"
+   inkscape:export-ydpi="200"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.73812737"
+     inkscape:cx="472.81813"
+     inkscape:cy="332.59843"
+     inkscape:window-width="1366"
+     inkscape:window-height="737"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showgrid="false" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:5.81289px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.311404"
+       x="63.263176"
+       y="38.241241"
+       id="text29"><tspan
+         sodipodi:role="line"
+         id="tspan29"
+         style="font-size:5.81289px;text-align:center;text-anchor:middle;stroke-width:0.311404"
+         x="63.263176"
+         y="38.241241">Vodak32 State Diagram</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="98.086823"
+       y="193.96881"
+       id="text165"
+       transform="rotate(-21.958036)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="98.086823"
+         y="193.96881"
+         id="tspan12">OFF</tspan></text>
+    <g
+       id="g8"
+       transform="translate(26.660229,3.7903653)">
+      <circle
+         style="fill:#e3dbdb;stroke:#cccccc;stroke-width:0.324982;stroke-dasharray:none"
+         id="path1"
+         cx="120.01608"
+         cy="132.10118"
+         r="15.671583" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.73686px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.311404"
+         x="119.9951"
+         y="133.1321"
+         id="text93"><tspan
+           sodipodi:role="line"
+           style="font-size:3.73686px;text-align:center;text-anchor:middle;stroke-width:0.311404"
+           x="119.9951"
+           y="133.1321"
+           id="tspan93">Sleep</tspan></text>
+    </g>
+    <g
+       id="g6"
+       transform="translate(26.660229,3.7903653)">
+      <circle
+         style="fill:#ff2a2a;stroke:#cccccc;stroke-width:0.324982;stroke-dasharray:none"
+         id="circle3"
+         cx="120.01608"
+         cy="44.851391"
+         r="15.671583" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.73686px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.311404"
+         x="119.9951"
+         y="45.882313"
+         id="text4"><tspan
+           sodipodi:role="line"
+           style="font-size:3.73686px;text-align:center;text-anchor:middle;stroke-width:0.311404"
+           x="119.9951"
+           y="45.882313"
+           id="tspan4">RUN</tspan></text>
+    </g>
+    <g
+       id="g9"
+       transform="translate(26.391167,4.7390633)">
+      <circle
+         style="fill:#afdde9;stroke:#cccccc;stroke-width:0.324982;stroke-dasharray:none"
+         id="circle1"
+         cx="164.575"
+         cy="87.527588"
+         r="15.671583" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.73686px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.311404"
+         x="164.55402"
+         y="88.55851"
+         id="text3"><tspan
+           sodipodi:role="line"
+           style="font-size:3.73686px;text-align:center;text-anchor:middle;stroke-width:0.311404"
+           x="164.55402"
+           y="88.55851"
+           id="tspan3">Cool Down</tspan></text>
+    </g>
+    <g
+       id="g7"
+       transform="translate(26.391167,4.7390633)">
+      <circle
+         style="fill:#ffaaaa;stroke:#cccccc;stroke-width:0.324982;stroke-dasharray:none"
+         id="circle2"
+         cx="75.995293"
+         cy="87.527588"
+         r="15.671583" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.73686px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.311404"
+         x="75.974312"
+         y="88.55851"
+         id="text6"><tspan
+           sodipodi:role="line"
+           style="font-size:3.73686px;text-align:center;text-anchor:middle;stroke-width:0.311404"
+           x="75.974312"
+           y="88.55851"
+           id="tspan6">Heat Up</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="110.82971"
+       y="139.15894"
+       id="text14"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="110.82971"
+         y="139.15894"
+         id="tspan13">ON &amp; </tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="110.82971"
+         y="142.68671"
+         id="tspan16">Solar&gt;50W</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="110.82971"
+         y="146.21449"
+         id="tspan14" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="102.08638"
+       y="115.64818"
+       id="text17"
+       transform="rotate(-3.2507896)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="102.08638"
+         y="115.64818"
+         id="tspan17">OFF</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="89.659889"
+       y="163.38223"
+       id="text20"
+       transform="rotate(-29.514124)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="89.659889"
+         y="163.38223"
+         id="tspan18">ON &amp; </tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="89.659889"
+         y="166.91"
+         id="tspan19">Solar&gt;50W</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="89.659889"
+         y="170.43779"
+         id="tspan20" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="89.544487"
+       y="119.25565"
+       id="text23"
+       transform="rotate(-17.082615)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="89.544487"
+         y="119.25565"
+         id="tspan21">ON &amp; </tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="89.544487"
+         y="122.78343"
+         id="tspan22">Solar&lt;50W</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="89.544487"
+         y="126.3112"
+         id="tspan23" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="196.14386"
+       y="110.83855"
+       id="text26"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="196.14386"
+         y="110.83855"
+         id="tspan24">OFF or </tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="196.14386"
+         y="114.36633"
+         id="tspan25">Solar &lt; 50W &amp;</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="196.14386"
+         y="117.8941"
+         id="tspan56">Low Temp</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="196.14386"
+         y="121.42188"
+         id="tspan26" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="86.202965"
+       y="65.756958"
+       id="text30"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="86.202965"
+         y="65.756958"
+         id="tspan30">Tail &amp; Base &gt;95</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="86.202965"
+         y="69.284737"
+         id="tspan45">Mid @ 79</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="86.202965"
+         y="72.812508"
+         id="tspan46">Hearts @ 78</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="164.38841"
+       y="44.902931"
+       id="text34"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="164.38841"
+         y="44.902931"
+         id="tspan32">ON &amp; </tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="164.38841"
+         y="48.430706"
+         id="tspan34">Solar&lt;50W or OFF</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="155.2148"
+       y="25.599871"
+       id="text37"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="155.2148"
+         y="25.599871"
+         id="tspan37">Solar Lost</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="155.2148"
+         y="29.127645"
+         id="tspan39">Lower wash</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="118.14515"
+       y="27.044355"
+       id="text41"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="118.14515"
+         y="27.044355"
+         id="tspan41">Low Temp</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="118.14515"
+         y="30.57213"
+         id="tspan42">Increase</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="118.14515"
+         y="34.099907"
+         id="tspan43">steam or</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="118.14515"
+         y="37.627682"
+         id="tspan75">lower wash</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="M 105.59994,76.849126 C 107.73566,64.30898 122.18856,55.605088 130.92086,53.579047"
+       id="path46"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 162.86461,49.327635 c 12.69584,0.795181 26.00206,15.54371 27.82647,26.228102"
+       id="path47"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 133.73675,39.463841 c -39.54493,9.866378 -6.86392,-43.2261275 4.16336,-5.016084"
+       id="path48"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 154.06231,34.761773 c -10.91536,-39.2683349 43.02814,-8.011932 5.12512,4.028385"
+       id="path49"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 117.43427,86.289611 c 9.98632,-9.909081 43.31749,-15.127473 57.44876,0.404454"
+       id="path50"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 175.10018,94.465184 c -9.09153,10.735936 -41.84622,18.818586 -57.26832,4.56755"
+       id="path51"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 108.85206,106.31861 c 8.74538,-1.72393 22.06855,6.47285 26.30828,18.17234"
+       id="path52"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 131.21943,137.16398 c -25.64342,2.11269 -33.282768,-17.24609 -28.76512,-29.08772"
+       id="path53"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 161.78798,139.92303 c 35.90137,-19.29349 17.28914,40.20817 -2.80109,5.88629"
+       id="path54"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 195.04468,107.72596 c -0.46864,12.59331 -9.54831,23.22484 -32.48272,24.2444"
+       id="path55"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#d40000;stroke-width:0.311404"
+       x="166.10664"
+       y="154.19464"
+       id="text57"
+       transform="rotate(-1.9098762)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;fill:#d40000;stroke-width:0.311404"
+         x="166.10664"
+         y="154.19464"
+         id="tspan57">Check</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;fill:#d40000;stroke-width:0.311404"
+         x="166.10664"
+         y="157.72241"
+         id="tspan58">Time</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#d40000;stroke-width:0.311404"
+       x="152.25601"
+       y="158.2446"
+       id="text60"
+       transform="rotate(-1.9098762)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;fill:#d40000;stroke-width:0.311404"
+         x="152.25601"
+         y="158.2446"
+         id="tspan60">ON</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="73.29847"
+       y="106.51014"
+       id="text63"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="73.29847"
+         y="106.51014"
+         id="tspan63">Heat &gt;120</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="73.29847"
+         y="110.03792"
+         id="tspan65">Start water</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="M 91.076974,103.56613 C 90.401147,144.31771 47.544002,99.039364 87.305595,98.249064"
+       id="path65"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="68.817169"
+       y="82.193245"
+       id="text67"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="68.817169"
+         y="82.193245"
+         id="tspan67">Base &gt;95</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="68.817169"
+         y="85.721024"
+         id="tspan68">Start Heads</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="68.817169"
+         y="89.248795"
+         id="tspan69">Heat</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="M 86.664623,88.646551 C 54.833442,114.1009 62.404689,52.217618 88.357718,82.351471"
+       id="path67"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 205.121,85.380994 c 13.72435,-38.376959 39.77464,18.264426 1.86453,6.246448"
+       id="path69"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="208.41748"
+       y="94.147057"
+       id="text70"
+       transform="rotate(-3.2507896)"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="208.41748"
+         y="94.147057"
+         id="tspan70">Wash</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="208.41748"
+         y="97.674835"
+         id="tspan71">Off</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;stroke-width:0.311404"
+       x="139.19562"
+       y="17.456594"
+       id="text73"><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="139.19562"
+         y="17.456594"
+         id="tspan73">Temp high</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="139.19562"
+         y="20.984369"
+         id="tspan74">Increase</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="139.19562"
+         y="24.512144"
+         id="tspan76">wash or</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="139.19562"
+         y="28.039919"
+         id="tspan77">lower</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:2.82222px;text-align:start;text-anchor:start;stroke-width:0.311404"
+         x="139.19562"
+         y="31.567694"
+         id="tspan78">steam</tspan></text>
+  </g>
+</svg>
