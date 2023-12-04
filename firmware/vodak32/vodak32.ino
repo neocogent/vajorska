@@ -45,8 +45,8 @@
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
-#define DEF_STEAM_MAX_POWER 130   // calc based on maxV and element R, 36*36/10
-#define DEF_HEADS_MAX_POWER 41    // calc based on maxV and element R, 36*36/31.5
+#define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
+#define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -80,8 +80,8 @@ hw_timer_t *timer = NULL;
 uint8_t outpins[] = {STEAM_HEAT,HEADS_HEAT,STEAM_VALVE,WASH_VALVE,FEED_VALVE,FERM1_VALVE,FERM2_VALVE,XTRA_HEAT};
 int numberOfSensors;
 float volts_max, volts_now;
+float steam_ohms, heads_ohms;
 uint8_t duty_steam, duty_heads;
-float max_power_steam, max_power_heads;
 uint32_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
@@ -133,8 +133,8 @@ void sendJsonDataResponse(AsyncWebServerRequest *request){
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
       flows.add(flow_rates[i][2]);
-    data["steam"] = max_power_steam * duty_steam / (1<<PWM_WIDTH);
-    data["heads"] = max_power_heads * duty_heads / (1<<PWM_WIDTH);
+    data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / (1<<PWM_WIDTH); // power depends on voltage and duty cycle, R const
+    data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / (1<<PWM_WIDTH);
 		data.printTo(*response);
 		request->send(response);
 }
@@ -212,8 +212,8 @@ void setup() {
   DBG_INFO("Loading config.");
   nvs.begin("config", true);
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
-  max_power_steam = nvs.getFloat("maxpwrsteam", DEF_STEAM_MAX_POWER);
-  max_power_heads = nvs.getFloat("maxpwrheads", DEF_HEADS_MAX_POWER);
+  steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
+  heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {
