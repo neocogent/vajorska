@@ -9,6 +9,18 @@
 #include "ArduinoJson.h"
 #include "time.h"
 
+#define DBG_ENABLE_ERROR
+#define DBG_ENABLE_WARNING
+#define DBG_ENABLE_INFO
+#define DBG_ENABLE_DEBUG
+#define DBG_ENABLE_VERBOSE
+#include <107-Arduino-Debug.hpp>
+
+// version
+#define VER_MAJOR	0
+#define VER_MINOR 1
+#define VER_PATCH	0
+
 // wifi defaults
 #define DEF_SSID "Lucy" //"Vodak32"
 #define DEF_PASSWORD "markesmith" //"12345678"
@@ -67,6 +79,7 @@ bool stateUpdate = false;
 uint8_t stateNow = STATE_SLEEP;
 volatile uint32_t ticks;
 
+DEBUG_INSTANCE(128, Serial);
 Preferences nvs;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -84,6 +97,7 @@ void IRAM_ATTR ticker()
 void setup() {
   // serial for log / debug output
   Serial.begin(115200); 
+  DBG_INFO("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
   
   // init GPIO pins
   pinMode(ONE_WIRE_BUS, INPUT);
@@ -94,7 +108,7 @@ void setup() {
   
     // initialize SPIFFS
   if(!SPIFFS.begin(true)){
-    Serial.println("Error while mounting SPIFFS");
+    DBG_ERROR("Error while mounting SPIFFS");
     return;
   }
   
@@ -110,16 +124,14 @@ void setup() {
     WiFi.disconnect();
 	  WiFi.mode(WIFI_STA);
     WiFi.begin(ssid.c_str(), password.c_str());
-    Serial.print("Connecting to WiFi: ");
-		Serial.print(ssid);
+    DBG_INFO("Connecting to WiFi: %s", ssid.c_str());
 		while (secs++ < WIFI_TIMEOUT && WiFi.status() != WL_CONNECTED) {
 			delay(1000);
-			Serial.print(".");
+			DBG_INFO(".");
 		}
 		if(secs < WIFI_TIMEOUT) 
 			break;
-		Serial.print("\nCannot connect. Creating AP: ");
-		Serial.println(ssid);
+		DBG_WARNING("\nCannot connect. Creating AP: %s", ssid.c_str());
 		WiFi.disconnect();
 		WiFi.mode(WIFI_AP);
 		if(WiFi.softAP(ssid.c_str(), password.c_str())){
@@ -129,11 +141,10 @@ void setup() {
       WiFi.softAPConfig(Ip, Ip, NMask);
 			break;
     }
-		Serial.println("AP failed. Starting over.");
+		DBG_WARNING("AP failed. Starting over.");
 		secs = 0;
 	}
-	Serial.print("\nWiFi up at: ");
-  Serial.println(secs < WIFI_TIMEOUT ? WiFi.localIP() : WiFi.softAPIP());
+	DBG_INFO("\nWiFi up at: %s", secs < WIFI_TIMEOUT ? WiFi.localIP() : WiFi.softAPIP());
   
   // load temperature sensor ids 
   char key[4] = "Sx\0";
@@ -147,14 +158,13 @@ void setup() {
   // init temperature bus
   sensors.begin();
   numberOfSensors = sensors.getDeviceCount();
-  Serial.print("Scanning temperature sensors. Found: ");
-  Serial.println(numberOfSensors, DEC);
+  DBG_INFO("Scanning temperature sensors. Found: %d", numberOfSensors);
   if(numberOfSensors != SENSOR_COUNT)
-    Serial.println("Warning: Incorrect number of temperature sensors detected.");
+    DBG_WARNING("Warning: Incorrect number of temperature sensors detected.");
 
   // read config values
 	key[0] = 'F';
-  Serial.println("Loading config.");
+  DBG_INFO("Loading config.");
   nvs.begin("config", true);
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
@@ -172,9 +182,9 @@ void setup() {
   struct tm timeinfo;
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   if(!getLocalTime(&timeinfo))
-    Serial.println("Failed to obtain time.");
+    DBG_WARNING("Failed to obtain time.");
   else
-		Serial.println(&timeinfo, "Time: %H:%M:%S");
+		DBG_INFO("Time: %H:%M:%S", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
@@ -197,13 +207,13 @@ void setup() {
   timerAttachInterrupt(timer, &ticker, true);
   timerAlarmWrite(timer, 1000000, true);
   timerAlarmEnable(timer);
-  Serial.println("Ticker started.");
+  DBG_INFO("Ticker started.");
 }
 
 void loop() {
 
   if(sensorUpdate){ 
-    //Serial.println("Reading sensors.");
+    DBG_DEBUG("Reading sensors.");
     sensors.requestTemperatures();
     for(int i = 0; i < SENSOR_COUNT; i++)
       if(sens_addrs[i][7]) // family code non-zero if sensor exists
@@ -212,7 +222,7 @@ void loop() {
     sensorUpdate = false;
   }
 	if(stateUpdate){ 
-		//Serial.println("State update.");
+		DBG_DEBUG("State update.");
     switch(stateNow)
     {
 			case STATE_SLEEP: // off, waiting on power, or start time
@@ -221,7 +231,7 @@ void loop() {
 				break;
 			case STATE_COOL_DN: // power loss, or shutdown 
 				break;
-			case STATE_RUN: // maintain balance for production
+			case STATE_RUN: // maintain temperatures for production
 				break;
 		}
     stateUpdate = false;
