@@ -110,6 +110,22 @@ void stateUpdateRun(void){
   DBG_DEBUG("State [RUN] update.");
 }
 
+void sendJsonDataResponse(AsyncWebServerRequest *request){
+		AsyncResponseStream *response = request->beginResponseStream("application/json");
+		DynamicJsonBuffer jsonBuffer;
+		JsonObject &data = jsonBuffer.createObject();  // holder for returning state data
+    JsonArray& temp = data.createNestedArray("temp");
+    for(int i=0; i < SENSOR_COUNT; i++)
+      temp.add(tempC[i]);
+		data["volts"] = volts_now;
+		data["state"] = stateNow;
+    JsonArray& flows = data.createNestedArray("flows");
+    for(int i=0; i < FLOW_COUNT; i++)
+      flows.add(flow_rates[i][2]);
+		data.printTo(*response);
+		request->send(response);
+}
+
 void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
 
 void setup() {
@@ -205,21 +221,7 @@ void setup() {
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
-  server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){
-		AsyncResponseStream *response = request->beginResponseStream("application/json");
-		DynamicJsonBuffer jsonBuffer;
-		JsonObject &data = jsonBuffer.createObject();  // holder for returning state data
-    JsonArray& temp = data.createNestedArray("temp");
-    for(int i=0; i < SENSOR_COUNT; i++)
-      temp.add(tempC[i]);
-		data["volts"] = volts_now;
-		data["state"] = stateNow;
-    JsonArray& flows = data.createNestedArray("flows");
-    for(int i=0; i < FLOW_COUNT; i++)
-      flows.add(flow_rates[i][2]);
-		data.printTo(*response);
-		request->send(response);
-  });
+  server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){ sendJsonDataResponse(request); });
   
   AsyncElegantOTA.begin(&server);
   server.begin();
