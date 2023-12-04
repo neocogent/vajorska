@@ -39,11 +39,20 @@
 #define FERM2_VALVE  12
 #define XTRA_HEAT    13
 
+// system parameters
 #define SENSOR_COUNT 8 // number of onewire devices on bus
 #define FLOW_COUNT   5 // number of valves
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
-#define DEF_VOLTS_MAX       61.4 // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
+#define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
+#define DEF_STEAM_MAX_POWER 130   // calc based on maxV and element R, 36*36/10
+#define DEF_HEADS_MAX_POWER 41    // calc based on maxV and element R, 36*36/31.5
+
+// pwm channels
+#define STEAM_PWM_CHANNEL	0
+#define HEADS_PWM_CHANNEL	1
+#define PWM_WIDTH					8   // pwm bits
+#define PWM_HZ						100 // pwm frequency
 
 // the machine states
 #define STATE_SLEEP 	0
@@ -71,6 +80,8 @@ hw_timer_t *timer = NULL;
 uint8_t outpins[] = {STEAM_HEAT,HEADS_HEAT,STEAM_VALVE,WASH_VALVE,FEED_VALVE,FERM1_VALVE,FERM2_VALVE,XTRA_HEAT};
 int numberOfSensors;
 float volts_max, volts_now;
+uint8_t duty_steam, duty_heads;
+float max_power_steam, max_power_heads;
 uint32_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
@@ -122,6 +133,8 @@ void sendJsonDataResponse(AsyncWebServerRequest *request){
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
       flows.add(flow_rates[i][2]);
+    data["steam"] = max_power_steam * duty_steam / (1<<PWM_WIDTH);
+    data["heads"] = max_power_heads * duty_heads / (1<<PWM_WIDTH);
 		data.printTo(*response);
 		request->send(response);
 }
@@ -199,6 +212,8 @@ void setup() {
   DBG_INFO("Loading config.");
   nvs.begin("config", true);
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
+  max_power_steam = nvs.getFloat("maxpwrsteam", DEF_STEAM_MAX_POWER);
+  max_power_heads = nvs.getFloat("maxpwrheads", DEF_HEADS_MAX_POWER);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {
@@ -225,6 +240,13 @@ void setup() {
   
   AsyncElegantOTA.begin(&server);
   server.begin();
+  
+  // setup heater pwm channels
+  DBG_INFO("Setting PWM channels.");
+  ledcSetup(STEAM_PWM_CHANNEL, PWM_HZ, PWM_WIDTH);
+  ledcAttachPin(STEAM_HEAT, STEAM_PWM_CHANNEL);  // use ledcWrite(STEAM_PWM_CHANNEL, duty_steam) to update
+  ledcSetup(HEADS_PWM_CHANNEL, PWM_HZ, PWM_WIDTH);
+  ledcAttachPin(HEADS_HEAT, HEADS_PWM_CHANNEL);
   
   // setup tick timer for sensor reads and state machine
   timer = timerBegin(0, 80, true);
