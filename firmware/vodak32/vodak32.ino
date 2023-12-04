@@ -31,7 +31,14 @@
 #define SENSOR_COUNT 8 // number of onewire devices on bus
 #define FLOW_COUNT  5 // number of valves
 #define SENSOR_UPDATE_MS  5000 // mS interval for sensor updates
+#define STATE_CYCLE_MS  30000 // mS interval for state machine cycle
 #define DEF_VOLTS_MAX  61.4 // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
+
+// the machine states
+#define STATE_SLEEP 0
+#define STATE_RAMP_UP 1
+#define STATE_RAMP_DN  2
+#define STATE_PRODUCE 3
 
 String ssid;
 String password;
@@ -47,17 +54,23 @@ uint32_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minut
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
 bool sensorUpdate = false;
+bool stateUpdate = false;
+uint8_t stateNow = STATE_SLEEP;
 
 Preferences nvs;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 AsyncWebServer server(80);
 ESP32Timer ITimer0(0);
+ESP32Timer ITimer1(1);
 
-bool IRAM_ATTR SensorRead(void * timerNo)
+bool IRAM_ATTR timerFlag(void * timerNo)
 {
   // set flag to read sensors
-  sensorUpdate = true;
+  if((int)timerNo == 0)
+		sensorUpdate = true;
+	else if((int)timerNo == 1)
+		stateUpdate = true;
   return true;
 }
 
@@ -133,7 +146,7 @@ void setup() {
     Serial.println("Warning: Incorrect number of temperature sensors detected.");
   
   // setup interval for sensor reads
-	if (ITimer0.attachInterruptInterval(SENSOR_UPDATE_MS * 1000, SensorRead))
+	if (ITimer0.attachInterruptInterval(SENSOR_UPDATE_MS * 1000, timerFlag))
 		Serial.println("Sensor reading started.");
 	else
 		Serial.println("Error: cannot start timer for sensor reading.");
@@ -177,12 +190,18 @@ void setup() {
   
   AsyncElegantOTA.begin(&server);
   server.begin();
+  
+  // setup interval for state machine
+	if (ITimer1.attachInterruptInterval(STATE_CYCLE_MS * 1000, timerFlag))
+		Serial.println("Sensor reading started.");
+	else
+		Serial.println("Error: cannot start timer for sensor reading.");
 }
 
 void loop() {
 
   if(sensorUpdate){ // set by ITimer0 ISR
-    //Serial.println("Reading sensors.");
+    Serial.println("Reading sensors.");
     sensors.requestTemperatures();
     for(int i = 0; i < SENSOR_COUNT; i++)
       if(sens_addrs[i][7]) // family code non-zero if sensor exists
@@ -190,5 +209,8 @@ void loop() {
     volts_now = analogRead(VOLT_SENSOR)*volts_max/4095;
     sensorUpdate = false; // ensure only once
   }
-   
+	if(stateUpdate){ // set by ITimer1 ISR
+		Serial.println("State update.");
+    stateUpdate = false;
+	}
 }
