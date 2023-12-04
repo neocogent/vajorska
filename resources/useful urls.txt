@@ -2,7 +2,7 @@ https://github.com/espressif/arduino-esp32
 https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html
 https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/tutorials.html
 https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/index.html
-https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spiffs.html
+
 
 https://randomnerdtutorials.com/projects-esp32/
 https://randomnerdtutorials.com/esp32-web-server-arduino-ide/
