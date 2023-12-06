@@ -25,7 +25,8 @@ Modes:
 - Manual - user can view info and set control values
 - Config - wifi settings and system parameters, calibrate valve flow timings
 
-(visual layout to follow)
+First rough draft of web app interface:
+<img src="docs/vodak32app.jpg" alt="Web app" width="480">
 
 ## Materials List
 
