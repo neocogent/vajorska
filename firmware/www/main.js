@@ -1,9 +1,9 @@
 (function($){
 	
-	var refresh = null, poll = 10000, wantcfg = true;
+	var refresh = null, poll = 10000, datareq = { 'cfg' : true };
 	
 	function Refresh() {
-		$.get('/data', { 'cfg': wantcfg }, UpdateData )
+		$.get('/data', datareq, UpdateData )
             .fail(function() {
                 $('#title').css('color', 'red');
             });
@@ -14,24 +14,19 @@
 		if(typeof data != "object")
 			$('#title').css('color', 'blue');
 		if(data.cfg != undefined) {
-			poll = parseInt(data.cfg.poll)*1000;
-			wantcfg = false;
+			//poll = parseInt(data.cfg.poll)*1000;
+			datareq = {};
 		}
 	}
 	
 	function postCfg( e ) {
-			$.post( '/cfg', $(this).serialize(), function(data) {
-
-                });
-            wantcfg = true;
+			$.post( '/cfg', $(this).serialize(), function(data) {});
 			e.preventDefault();
 			showmain();
 	}
 	
     function run( e ) {
-        $.post( '/run', $(this).serialize(), function(data) {
-            
-        });
+        $.post( '/run', {'on':$(this).is(':checked')}, function(data) {});
     }
     
     function showmain(e) {

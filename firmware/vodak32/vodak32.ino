@@ -47,8 +47,6 @@
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
-#define MAX_STEAM_DUTY 255	// 100% as 8 bits
-#define MAX_DUTY_DUTY 255		// 100% as 8 bits
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -91,6 +89,7 @@ bool sensorUpdate = false;
 bool stateUpdate = false;
 uint8_t stateNow = STATE_SLEEP;
 volatile uint32_t ticks;
+bool bRun = false;
 
 DEBUG_INSTANCE(128, Serial);
 Preferences nvs;
@@ -123,7 +122,7 @@ void stateUpdateRun(void){
   DBG_DEBUG("State [RUN] update.");
 }
 
-void sendJsonDataResponse(AsyncWebServerRequest *request){
+void sendJsonData(AsyncWebServerRequest *request){
 		AsyncResponseStream *response = request->beginResponseStream("application/json");
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject &data = jsonBuffer.createObject();  // holder for returning state data
@@ -132,16 +131,29 @@ void sendJsonDataResponse(AsyncWebServerRequest *request){
       temp.add(tempC[i]);
 		data["volts"] = volts_now;
 		data["state"] = stateNow;
+    data["run"] = bRun;
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
       flows.add(flow_rates[i][2]);
     data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / (1<<PWM_WIDTH); // power depends on voltage and duty cycle, R const
     data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / (1<<PWM_WIDTH);
+    if(request->hasParam("cfg")){
+      data["cfg"] = 1; // send cfg data
+    }
 		data.printTo(*response);
 		request->send(response);
 }
-void saveCfgDataResponse(AsyncWebServerRequest *request){
-	// validate and save data, return redirect /data
+
+void onSaveCfg(AsyncWebServerRequest *request){
+  // save cfg data
+  request->redirect("/data?cfg=true");
+  DBG_INFO("Saved Cfg.");
+}
+void onRunChg(AsyncWebServerRequest *request){
+  if(request->hasParam("on", true))
+    bRun = request->getParam("on", true)->value() == "true";
+  request->send(200);
+  DBG_INFO("Run state: %s.", bRun ? "ON" : "OFF");
 }
 
 void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
@@ -219,8 +231,8 @@ void setup() {
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
-  max_steam_duty = nvs.getInt("maxsteam", MAX_STEAM_DUTY);
-  max_heads_duty= nvs.getInt("maxheads", MAX_HEADS_DUTY);
+  max_steam_duty = nvs.getInt("maxsteam", 1<<PWM_WIDTH-1);
+  max_heads_duty= nvs.getInt("maxheads", 1<<PWM_WIDTH-1);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {
@@ -243,9 +255,10 @@ void setup() {
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
-  server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){ sendJsonDataResponse(request); });
-  server.on("/cfg", HTTP_POST, [](AsyncWebServerRequest *request){ saveCfgDataResponse(request); });
-  
+  server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){ sendJsonData(request); });
+  server.on("/cfg", HTTP_POST, [](AsyncWebServerRequest *request){ onSaveCfg(request); });
+  server.on("/run", HTTP_POST, [](AsyncWebServerRequest *request){ onRunChg(request); });
+
   AsyncElegantOTA.begin(&server);
   server.begin();
   
