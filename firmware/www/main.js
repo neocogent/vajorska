@@ -108,6 +108,14 @@
     }
 
     $(document).ready( function() {
+		$('.menucfg').on('click', function (event) {
+			$('#pgs .active').removeClass('active');
+			$('#pg-main').tab('show');
+			$('#cfgmenu .active').removeClass('active'); 
+			$('#cfgmenu ul:first-child').addClass('active'); 
+			})
+
+		
         $('.run').click(run);
         $('.on').click(on);
         $('.off').click(off);

@@ -47,6 +47,8 @@
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
+#define MAX_STEAM_DUTY 255	// 100% as 8 bits
+#define MAX_DUTY_DUTY 255		// 100% as 8 bits
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -81,7 +83,7 @@ uint8_t outpins[] = {STEAM_HEAT,HEADS_HEAT,STEAM_VALVE,WASH_VALVE,FEED_VALVE,FER
 int numberOfSensors;
 float volts_max, volts_now;
 float steam_ohms, heads_ohms;
-uint8_t duty_steam, duty_heads;
+uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty;
 uint32_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
@@ -214,6 +216,8 @@ void setup() {
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
+  max_steam_duty = nvs.getInt("maxsteam", MAX_STEAM_DUTY);
+  max_heads_duty= nvs.getInt("maxheads", MAX_HEADS_DUTY);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {

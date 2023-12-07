@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vodak32 Still</title>
+    <title>Vodak32</title>
     <link href="bootstrap.min.css" rel="stylesheet">
     <link href="font-awesome.min.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
@@ -14,36 +14,25 @@
     <div class="tab-content">
     <div id="main" class="col-xs-12">
         <div class="row">
-            <canvas id="pv" class="readout" width="280" height="80"></canvas>
+			<h2 id="title">Vodak32</h2>
+            <canvas id="hearts" class="" width="280" height="80"></canvas>
         </div>
         <div class="row">
-            <canvas id="sv" class="readout" width="200" height="80"></canvas>
-            <div class="chg-btns">
-                <button id="up" class="btn btn-info chg"><span class="fa fa-chevron-up" aria-hidden="true"></span></button>
-                <button id="dn" class="btn btn-info chg"><span class="fa fa-chevron-down" aria-hidden="true"></span></button>
-            </div>
+            <div class="custom-control custom-switch custom-switch-xl">
+				<input type="checkbox" class="custom-control-input" id="onoff">
+				<label class="custom-control-label bignbold" for="onoff">ON</label>
+			</div>
+			<div class="timeronoff bignbold">TIME:
+			</div>
+			<div>
+				<div class="lcdclock" id="timerON">ON --:--</div>
+				<div class="lcdclock" id="timerOFF">OFF --:--</div>
+			</div>
+
         </div>
-        <div class="row">
-            <div class="btn-group">
-                <button class="btn dropdown-toggle" id="def-presets" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Preset: <span class="caret"></span></button>
-                <ul class="dropdown-menu" aria-labelledby="def-presets"><li><a href="#">loading...</a></li></ul>
-                <button class="btn btn-primary pgClk" id="edit-presets"><span class="fa fa-pencil" aria-hidden="true"></span></button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="btn-group">
-                <button class="btn btn-success btn-lg run">AUTO</button>
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-success btn-lg on">ON</button>
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-success btn-lg off">OFF</button>
-            </div>
-        </div>
+        
     </div>
-    <div id="pg-edit-config" class="col-xs-9 hidden">
+    <div id="pg-edit-config" class="col-xs-9 d-none">
         <div class="row">
             <form class="update" id="config">
                 <div class="form-group">
