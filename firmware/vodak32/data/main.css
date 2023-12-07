@@ -1,32 +1,39 @@
 
 .container { width: 480px; padding:10px; background:#777; }
-/*.centered {
-      position: fixed;
-      top: 25%;
-      left: 50%;
-      transform: translate(-50%, -25%);
-    }
-@media only screen and (max-device-height: 480px) {
-    .centered {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-}*/
 
 @font-face{
  font-family:'lcd-font';
- src: url('LCDMono.woff');
+ src: url('LCDMono.woff2');
 }
 
 #title { width:100%; text-align: center; }
-#hearts { width:100%; margin-left: 5px; margin-right: 5px; background:#888; }
+#status { width:100%; margin-left: 5px; margin-right: 5px; background:#888; }
 .timeronoff { margin-top: auto; margin-bottom: auto; width: 6rem; margin-left: 1rem; }
-/*.row { margin-top: 5px;  }*/
+.module {width: 153px; text-align: center; background: #888; height: 80px; margin: 5px 5px; }
 
 .bignbold { font-size:25px; font-weight:700; }
-.lcdclock { text-align: right; font-family:'lcd-font'; font-size: 35px; font-weight: 700; }
+.menubtn { width:260px; text-align: right; font-family:'lcd-font'; font-size: 20px; font-weight: 700; }
+.menucfg { padding-top: 10px; }
+.cfg { padding: 0.5rem 1rem; }
+#cfgmenu { border-bottom: 1px solid #444; }
+.lcdclock { width:260px; text-align: right; font-family:'lcd-font'; font-size: 35px; font-weight: 700; }
+.lcdvalue { font-family:'lcd-font'; font-size: 35px; font-weight: 700; }
+.flow { text-align:center; font-size: 12px; }
+.rside { text-align:right; }
+.cancel { background-color: #aaa; }
+
+.mediumtxt { width:200px; }
+.mediumgrp { width:200px; height:60px; float:left; }
+.mediumgrp input { width:50px; }
+.mediumgrp .input-group-append { width:150px; }
+.mediumgrp label { width: 100%; }
+
+
+.custom-control-input:checked~.custom-control-label::before {
+  border-color: green !important;
+  background-color: green !important;
+  box-shadow: 0 0 0 0.2rem #07630c;
+}
 .custom-switch.custom-switch-xl {
   padding-bottom: 1rem;
 	padding-left: 2.25rem;

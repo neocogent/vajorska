@@ -11,62 +11,137 @@
 </head>
 <body>
 <div class="container centered">
-    <div class="tab-content">
-    <div id="main" class="col-xs-12">
-        <div class="row">
-			<h2 id="title">Vodak32</h2>
-            <canvas id="hearts" class="" width="280" height="80"></canvas>
-        </div>
-        <div class="row">
-            <div class="custom-control custom-switch custom-switch-xl">
-				<input type="checkbox" class="custom-control-input" id="onoff">
-				<label class="custom-control-label bignbold" for="onoff">ON</label>
+	<div id="main" class="col-xs-12">
+		<nav class="navbar navbar-light light-blue lighten-4">
+		<div><h2 id="title" class="navbar_brand" href="#">Vodak32</h2>
+		</div>
+		<button class="navbar-toggler toggler-example menucfg" type="button" data-toggle="collapse" data-target="#cfgmenu"
+				aria-controls="navbarSupportedContent1" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="menubtn">$</span>
+		</button>
+		<div class="collapse navbar-collapse rside" id="cfgmenu">
+			<ul class="nav navbar-nav mr-auto">
+			  <li class="nav-item active"><a class="nav-link" href="#pg-wifi" data-toggle="tab">Wifi</a></li>
+			  <li class="nav-item"><a class="nav-link" href="#pg-settings" data-toggle="tab">Settings</a></li>
+			  <li class="nav-item"><a class="nav-link" href="#pg-calibrate" data-toggle="tab">Calibration</a></li>
+			  <li class="nav-item"><a class="nav-link" href="#pg-about" data-toggle="tab">About</a></li>
+			</ul>
+		</div>
+		</nav>
+	</div>
+	<div id="pgs" class="tab-content">
+		<div id="pg-main" class="tab-pane active col-xs-9">		
+			<div class="row">
+				<canvas id="status" class="" width="280" height="80"></canvas>
 			</div>
-			<div class="timeronoff bignbold">TIME:
+			<div class="row">
+				<div class="custom-control custom-switch custom-switch-xl">
+					<input type="checkbox" class="custom-control-input" id="run">
+					<label class="custom-control-label bignbold" for="run">ON</label>
+				</div>
+				<div>
+					<div class="lcdclock" id="timerON">ON --:--</div>
+					<div class="lcdclock" id="timerOFF">OFF --:--</div>
+				</div>
+				
+				<div class="module"><span>Hearts Temp</span><div class="lcdvalue">78.2 °C</div></div>
+				<div class="module"><span>Mid Temp</span><div class="lcdvalue">79 °C</div></div>
+				<div class="module"><span>Base Temp</span><div class="lcdvalue">95 °C</div></div>
+				
+				
+				<div class="module"><span>Steam Power</span><div class="lcdvalue">118 W</div></div>
+				<div class="module"><span>Steam Temp</span><div class="lcdvalue">105 °C</div></div>
+				<div class="module"><span>Steam Flow</span><div class="lcdvalue">2.6 M</div></div>
+				
+				<div class="module"><span>Heads Power</span><div class="lcdvalue">30 W</div></div>
+				<div class="module"><span>Heads Temp</span><div class="lcdvalue">68.5 °C</div></div>
+				<div class="module"><span>Tails Temp</span><div class="lcdvalue">95 °C</div></div>
+				
+				<div class="module"><span>Wash Flow</span><div class="lcdvalue">6.5 M</div></div>
+				<div class="module"><span>Ferms Flow</span><div class="lcdvalue">6.5 M</div></div>
+				<div class="module"><span>Ferms Temp</span><div class="lcdvalue">24 °C</div></div>
 			</div>
-			<div>
-				<div class="lcdclock" id="timerON">ON --:--</div>
-				<div class="lcdclock" id="timerOFF">OFF --:--</div>
-			</div>
-
-        </div>
-        
-    </div>
-    <div id="pg-edit-config" class="col-xs-9 d-none">
-        <div class="row">
-            <form class="update" id="config">
-                <div class="form-group">
-                    <label for="name">Kp</label>
-                    <input type="text" class="form-control" name="kp" placeholder="1.0">
-                </div>
-                <div class="form-group">
-                    <label for="name">Ki</label>
-                    <input type="text" class="form-control" name="ki" placeholder="1.0">
-                </div>
-                <div class="form-group">
-                    <label for="name">Kd</label>
-                    <input type="text" class="form-control" name="kd" placeholder="1.0">
-                </div>
-                <div class="form-group">
-                    <label for="name">SSID</label>
-                    <input type="text" class="form-control" name="ssid" placeholder="reflow">
-                </div>
-                <div class="form-group">
-                    <label for="name">Password</label>
-                    <input type="text" class="form-control" name="pwd" placeholder="">
-                </div>
-                <div class="form-group">
-                    <label for="name">Hostname</label>
-                    <input type="text" class="form-control" name="hostname" placeholder="reflow">
-                </div> 
-            <button class="btn cancel" type="button">Cancel</button>
-            <button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
-            </form>
-        </div>
-    </div>
-    </div>
+		</div>
+		<div id="pg-wifi" class="tab-pane col-xs-9 cfg">
+			<form class="update" id="wifi">
+				<div class="form-group">
+					<label for="name">SSID</label>
+					<input type="text" class="form-control mediumtxt" name="ssid" placeholder="vodak32">
+				</div>
+				<div class="form-group">
+					<label for="name">Password</label>
+					<input type="text" class="form-control mediumtxt" name="pwd" placeholder="12345678">
+				</div> 
+			<button class="btn cancel" type="button">Cancel</button>
+			<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
+			</form>
+		</div>
+		<div id="pg-settings" class="tab-pane col-xs-9 cfg">
+			<form class="update" id="settings">
+				<div class="form-group input-group mediumgrp">
+					<label for="steamohms">Steam Heater Resistance </label>
+					<input type="text" class="form-control" name="steamohms" placeholder="10">
+					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="steamduty">Max Duty Cycle </label>
+					<input type="text" class="form-control" name="steamduty" placeholder="100">
+					<div class="input-group-append"><span class="input-group-text"> % </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="headsohms">Heads Heater Resistance</label>
+					<input type="text" class="form-control" name="headsohms" placeholder="32">
+					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="headsduty">Max Duty Cycle </label>
+					<input type="text" class="form-control" name="headsduty" placeholder="100">
+					<div class="input-group-append"><span class="input-group-text"> % </span></div>
+				</div>
+				<button class="btn cancel" type="button">Cancel</button>
+				<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
+			</form>
+		</div>
+		<div id="pg-calibrate" class="tab-pane col-xs-9 cfg">
+			<form class="update" id="calibrate">
+				<div class="form-group input-group mediumgrp">
+					<label for="volts">Voltage Now</label>
+					<input type="text" class="form-control" name="volts" placeholder="36">
+					<div class="input-group-append"><span class="input-group-text"> volts </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp"></div>
+				<div class="form-group input-group mediumgrp">
+					<label for="waterflowmax">Water Flow - High</label>
+					<input type="text" class="form-control" name="waterflowmax" placeholder="10">
+					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="waterflowmin">Water Flow - Low</label>
+					<input type="text" class="form-control" name="waterflowmin" placeholder="5">
+					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="washflowmax">Wash Flow - High</label>
+					<input type="text" class="form-control" name="washflowmax" placeholder="10">
+					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="washflowmin">Wash Flow - Low</label>
+					<input type="text" class="form-control" name="washflowmin" placeholder="5">
+					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+				</div>
+				<button class="btn cancel" type="button">Cancel</button>
+				<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
+			</form>
+		</div>
+		<div id="pg-about" class="tab-pane col-xs-9 cfg">
+			Vodak32 micro-Still <br>
+			(C) Copyright 2023 neocogent.<br>
+			Visit <a href="https://github.com/neocogent/vodak32" target="_blank" rel="noopener noreferrer">https://github.com/neocogent/vodak32</a><br>
+		</div>
+	</div>
 </div>
-<script src="jquery-3.7.1.slim.min.js"></script>
+<script src="jquery-3.7.1.min.js"></script>
 <script src="bootstrap.min.js"></script>
 <script src="main.js"></script>
 </body>

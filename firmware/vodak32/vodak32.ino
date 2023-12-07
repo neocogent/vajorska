@@ -140,6 +140,9 @@ void sendJsonDataResponse(AsyncWebServerRequest *request){
 		data.printTo(*response);
 		request->send(response);
 }
+void saveCfgDataResponse(AsyncWebServerRequest *request){
+	// validate and save data, return redirect /data
+}
 
 void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
 
@@ -241,6 +244,7 @@ void setup() {
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
   server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){ sendJsonDataResponse(request); });
+  server.on("/cfg", HTTP_POST, [](AsyncWebServerRequest *request){ saveCfgDataResponse(request); });
   
   AsyncElegantOTA.begin(&server);
   server.begin();
