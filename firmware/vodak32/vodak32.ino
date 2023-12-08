@@ -8,6 +8,7 @@
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include "time.h"
+#include <string.h>
 
 #define DBG_ENABLE_ERROR
 #define DBG_ENABLE_WARNING
@@ -60,7 +61,7 @@
 #define STATE_COOL_DN 2
 #define STATE_RUN 		3
 
-// the temp sensor ids
+// the temp sensor row ids
 #define TEMP_HEADS  0
 #define TEMP_HEARTS 1
 #define TEMP_MID    2
@@ -69,6 +70,13 @@
 #define TEMP_STEAM  5
 #define TEMP_FERM1  6
 #define TEMP_FERM2  7
+
+// the flow valve row ids, col 0=high, col 1=low, col 2=now
+#define FLOW_STEAM	0
+#define FLOW_WASH		1
+#define FLOW_FEED		2
+#define FLOW_FERM1	3
+#define FLOW_FERM2	4
 
 String ssid;
 String password;
@@ -82,14 +90,14 @@ int numberOfSensors;
 float volts_max, volts_now;
 float steam_ohms, heads_ohms;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty;
-uint32_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
+uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
+uint8_t state_now = STATE_SLEEP;
 bool sensorUpdate = false;
 bool stateUpdate = false;
-uint8_t stateNow = STATE_SLEEP;
+bool bRunning = false;
 volatile uint32_t ticks;
-bool bRun = false;
 
 DEBUG_INSTANCE(128, Serial);
 Preferences nvs;
@@ -130,30 +138,90 @@ void sendJsonData(AsyncWebServerRequest *request){
     for(int i=0; i < SENSOR_COUNT; i++)
       temp.add(tempC[i]);
 		data["volts"] = volts_now;
-		data["state"] = stateNow;
-    data["run"] = bRun;
+		data["state"] = state_now;
+    data["run"] = bRunning;
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
       flows.add(flow_rates[i][2]);
     data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / (1<<PWM_WIDTH); // power depends on voltage and duty cycle, R const
     data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / (1<<PWM_WIDTH);
-    if(request->hasParam("cfg")){
-      data["cfg"] = 1; // send cfg data
-    }
+    if(request->hasParam("cfg")){ // send cfg data only when requested
+      JsonObject& cfg = data.createNestedObject("cfg"); 
+			cfg["ssid"] = ssid;
+			cfg["pwd"] = password;
+			cfg["sR"] = steam_ohms;
+			cfg["sD"] = max_steam_duty;
+			cfg["hR"] = heads_ohms;
+			cfg["hD"] = max_heads_duty;
+			cfg["sfh"] = (float)flow_rates[FLOW_STEAM][0]/20;
+			cfg["sfl"] = (float)flow_rates[FLOW_STEAM][1]/20;
+			cfg["wfh"] = (float)flow_rates[FLOW_WASH][0]/20;
+			cfg["wfl"] = (float)flow_rates[FLOW_WASH][1]/20;
+			}
 		data.printTo(*response);
 		request->send(response);
 }
 
 void onSaveCfg(AsyncWebServerRequest *request){
-  // save cfg data
+  // save cfg data using preferences
+  if(request->hasParam("ssid", true)){
+		ssid = request->getParam("ssid", true)->value();
+		password = request->getParam("pwd", true)->value();
+		nvs.begin("wifi");
+		nvs.putString("ssid", ssid);
+		nvs.putString("password", password);
+		nvs.end();
+	}
+	nvs.begin("cfg");
+	if(request->hasParam("sR", true)){
+		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
+		heads_ohms = atof(request->getParam("hR", true)->value().c_str());
+		nvs.putFloat("steamohms", steam_ohms);
+		nvs.putFloat("headsohms", heads_ohms);
+		max_steam_duty = atoi(request->getParam("sD", true)->value().c_str());
+		max_heads_duty = atoi(request->getParam("hD", true)->value().c_str());
+		nvs.putUInt("maxsteam", max_steam_duty);
+		nvs.putUInt("maxheads", max_heads_duty);
+	}
+  if(request->hasParam("vN", true) && request->getParam("vN", true)->value() != ""){
+		volts_max = atof(request->getParam("vN", true)->value().c_str()) * 4095 / analogRead(VOLT_SENSOR); // calibrate if user gave volts_now
+		nvs.putFloat("voltsmax", volts_max);
+	}
+	if(request->hasParam("valve", true)){
+		char key[4] = "Fxx";
+		uint8_t valve = atoi(request->getParam("valve", true)->value().c_str());
+		uint8_t rate = atoi(request->getParam("rate", true)->value().c_str());
+		flow_rates[valve][rate] = atoi(request->getParam("flow", true)->value().c_str())*20;
+		key[1] = 0x30+valve;
+		key[2] = 0x30+rate;
+		nvs.putUInt(key, flow_rates[valve][rate]);
+	}
+	if(request->hasParam("sid", true)){
+		char key[3] = "Sx";
+    float swapC;
+		DeviceAddress swapAddr;
+		uint8_t sid = atoi(request->getParam("sid", true)->value().c_str());
+		uint8_t tid = atoi(request->getParam("tid", true)->value().c_str());
+		memcpy(swapAddr, sens_addrs[sid], 8);
+    swapC = tempC[sid];
+    memcpy(sens_addrs[sid], sens_addrs[tid], 8);
+    tempC[sid] = tempC[tid];
+		memcpy(sens_addrs[tid], swapAddr, 8);
+    tempC[tid] = swapC;
+		key[1] = 0x41+sid;
+		nvs.putBytes(key, sens_addrs[sid], 8);
+		key[1] = 0x41+tid;
+		nvs.putBytes(key, sens_addrs[tid], 8);
+	}
+	nvs.end();
   request->redirect("/data?cfg=true");
   DBG_INFO("Saved Cfg.");
 }
 void onRunChg(AsyncWebServerRequest *request){
   if(request->hasParam("on", true))
-    bRun = request->getParam("on", true)->value() == "true";
+    bRunning = request->getParam("on", true)->value() == "true";
   request->send(200);
-  DBG_INFO("Run state: %s.", bRun ? "ON" : "OFF");
+  DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
 }
 
 void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
@@ -210,19 +278,40 @@ void setup() {
   
   // load temperature sensor ids 
   char key[4] = "Sx\0";
-  nvs.begin("onewire", true);
+  nvs.begin("onewire");
   for(int i = 0; i < SENSOR_COUNT; i++) {
 		key[1] = i + 0x41;
     nvs.getBytes(key, sens_addrs[i], 8);
 	 }
-  nvs.end();
-  
-  // init temperature bus
+	 
+  // init temperature bus, save any found devices
   sensors.begin();
   numberOfSensors = sensors.getDeviceCount();
   DBG_INFO("Scanning temperature sensors. Found: %d", numberOfSensors);
   if(numberOfSensors != SENSOR_COUNT)
     DBG_WARNING("Incorrect number of temperature sensors detected.");
+  int j;
+  DeviceAddress tmpAddr;
+  for(int i = 0; i < numberOfSensors; i++){
+		uint8_t empty_slot = 0xFF;
+		sensors.getAddress(tmpAddr, i);
+		for(j = 0; j < SENSOR_COUNT; j++){
+			if(sens_addrs[j][7] == 0) // device family always non-zero
+				empty_slot = j;
+			if(!memcmp(sens_addrs[j], tmpAddr, 8))
+				break;
+		}
+		if(j == SENSOR_COUNT){
+			if(empty_slot != 0xFF){
+				key[1] = empty_slot + 0x41;
+				memcpy(sens_addrs[empty_slot], tmpAddr, 8);
+				nvs.putBytes(key, sens_addrs[empty_slot], 8);
+			}
+			else
+				DBG_WARNING("Sensor found but no empty slots.");
+		}
+	}
+	nvs.end();
 
   // read config values
 	key[0] = 'F';
@@ -231,8 +320,8 @@ void setup() {
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
-  max_steam_duty = nvs.getInt("maxsteam", 1<<PWM_WIDTH-1);
-  max_heads_duty= nvs.getInt("maxheads", 1<<PWM_WIDTH-1);
+  max_steam_duty = nvs.getUInt("maxsteam", 1<<PWM_WIDTH-1);
+  max_heads_duty= nvs.getUInt("maxheads", 1<<PWM_WIDTH-1);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {
@@ -283,13 +372,13 @@ void loop() {
     DBG_DEBUG("Reading sensors.");
     sensors.requestTemperatures();
     for(int i = 0; i < SENSOR_COUNT; i++)
-      if(sens_addrs[i][7]) // family code non-zero if sensor exists
+      if(sens_addrs[i][7]) // // device family always non-zero when sensor exists
         tempC[i] = sensors.getTempC(sens_addrs[i]);
     volts_now = analogRead(VOLT_SENSOR)*volts_max/4095;
     sensorUpdate = false;
   }
 	if(stateUpdate){ 
-    stateFuncs[stateNow]();
+    stateFuncs[state_now]();
     stateUpdate = false;
 	}
 }

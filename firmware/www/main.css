@@ -20,13 +20,27 @@
 .lcdvalue { font-family:'lcd-font'; font-size: 35px; font-weight: 700; }
 .flow { text-align:center; font-size: 12px; }
 .rside { text-align:right; }
-.cancel { background-color: #aaa; }
+.cancel { margin-right: 5px; background-color: #aaa; }
 
 .mediumtxt { width:200px; }
-.mediumgrp { width:200px; height:60px; float:left; }
-.mediumgrp input { width:50px; }
-.mediumgrp .input-group-append { width:150px; }
+.cfggrp { width:200px; height:60px; float:left; }
+.cfggrp input { width:50px; }
+.cfggrp .input-group-append { width:150px; }
+.cfggrp label { width: 100%; }
+.smallgrp { width:180px; height:60px; float:left; }
+.smallgrp .input-group-append { width:80px; }
+.smallgrp label { width: 100%; }
+.mediumgrp { width:360px; height:60px; float:left; }
+.mediumgrp .input-group-append { width:90px; }
 .mediumgrp label { width: 100%; }
+#valve { width:80px; }
+#rate { width:80px; }
+#flow { width:40px; margin-left: 10px; }
+.widegrp { width:270px; height:60px; float:left; }
+.widegrp label { width: 100%; }
+#sid { width:90px; }
+#tid { width:90px; margin-right: 20px; }
+#senset {margin-left: 5px; }
 
 
 .custom-control-input:checked~.custom-control-label::before {
@@ -62,3 +76,5 @@
   transform: translateX(1.5rem);
 	}
 }
+
+.about { color:white; }

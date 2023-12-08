@@ -17,12 +17,44 @@
 			//poll = parseInt(data.cfg.poll)*1000;
 			datareq = {};
 		}
+		// store temps in correct readouts
+		$('#tH').text(data.tempC[0]);
+		$('#tP').text(data.tempC[1]);
+		$('#tM').text(data.tempC[2]);
+		$('#tB').text(data.tempC[3]);
+		
+		// add temps cfg dropdown with ids
+		$('#tid').empty();
+		$.each(data.cfg.tempC, function(n,e) {
+			$('#tid').append($('<option>', { value:n, text:'#'+n+' '+e+' °C' } ));
+			});
+		$('#volts_now').text(data.volts);
+		
 	}
 	
 	function postCfg( e ) {
 			$.post( '/cfg', $(this).serialize(), function(data) {});
 			e.preventDefault();
 			showmain();
+	}
+	function voltset( e ) {
+		$.post( '/cfg', { "vN":$('#volts_now').val() }, function(data) {});
+		e.preventDefault();
+	}
+	function flowset( e ) {
+		$.post( '/cfg', { 
+				"valve":$('#valve').find(":selected").val(), 
+				"rate": $('#flow').find(":selected").val(), 
+				"flow": $('#flow').val() 
+				}, function(data) {});
+		e.preventDefault();
+	}
+	function senset( e ) {
+		$.post( '/cfg', { 
+				"sid":$('#sid').find(":selected").val(), 
+				"tid":$('#tid').find(":selected").val() 
+				}, function(data) {});
+		e.preventDefault();
 	}
 	
     function run( e ) {
@@ -42,6 +74,9 @@
 		$('.menucfg').on('click', showmain );
 		$('.cancel').on('click', showmain );
 		$('.update').on("submit", postCfg);
+		$('#voltset').on('click', voltset );
+		$('#flowset').on('click', flowset );
+		$('#senset').on('click', senset );
 
 		Refresh();
     });

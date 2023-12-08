@@ -43,32 +43,32 @@
 					<div class="lcdclock" id="timerOFF">OFF --:--</div>
 				</div>
 				
-				<div class="module"><span>Hearts Temp</span><div class="lcdvalue">78.2 °C</div></div>
-				<div class="module"><span>Mid Temp</span><div class="lcdvalue">79 °C</div></div>
-				<div class="module"><span>Base Temp</span><div class="lcdvalue">95 °C</div></div>
+				<div id="tP" class="module"><span>Hearts Temp</span><div class="lcdvalue">78.2 °C</div></div>
+				<div id="tM" class="module"><span>Mid Temp</span><div class="lcdvalue">79 °C</div></div>
+				<div id="tB" class="module"><span>Base Temp</span><div class="lcdvalue">95 °C</div></div>
 				
 				
-				<div class="module"><span>Steam Power</span><div class="lcdvalue">118 W</div></div>
-				<div class="module"><span>Steam Temp</span><div class="lcdvalue">105 °C</div></div>
-				<div class="module"><span>Steam Flow</span><div class="lcdvalue">2.6 M</div></div>
+				<div id="pS" class="module"><span>Steam Power</span><div class="lcdvalue">118 W</div></div>
+				<div id="tS" class="module"><span>Steam Temp</span><div class="lcdvalue">105 °C</div></div>
+				<div id="fS" class="module"><span>Steam Flow</span><div class="lcdvalue">2.6 M</div></div>
 				
-				<div class="module"><span>Heads Power</span><div class="lcdvalue">30 W</div></div>
-				<div class="module"><span>Heads Temp</span><div class="lcdvalue">68.5 °C</div></div>
-				<div class="module"><span>Tails Temp</span><div class="lcdvalue">95 °C</div></div>
+				<div id="pH" class="module"><span>Heads Power</span><div class="lcdvalue">30 W</div></div>
+				<div id="tH" class="module"><span>Heads Temp</span><div class="lcdvalue">68.5 °C</div></div>
+				<div id="tT" class="module"><span>Tails Temp</span><div class="lcdvalue">95 °C</div></div>
 				
-				<div class="module"><span>Wash Flow</span><div class="lcdvalue">6.5 M</div></div>
-				<div class="module"><span>Ferms Flow</span><div class="lcdvalue">6.5 M</div></div>
-				<div class="module"><span>Ferms Temp</span><div class="lcdvalue">24 °C</div></div>
+				<div id="fW" class="module"><span>Wash Flow</span><div class="lcdvalue">6.5 M</div></div>
+				<div id="fF" class="module"><span>Ferms Flow</span><div class="lcdvalue">6.5 M</div></div>
+				<div id="tF" class="module"><span>Ferms Temp</span><div class="lcdvalue">24 °C</div></div>
 			</div>
 		</div>
 		<div id="pg-wifi" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="wifi">
 				<div class="form-group">
-					<label for="name">SSID</label>
+					<label for="ssid">SSID</label>
 					<input type="text" class="form-control mediumtxt" name="ssid" placeholder="vodak32">
 				</div>
 				<div class="form-group">
-					<label for="name">Password</label>
+					<label for="pwd">Password</label>
 					<input type="text" class="form-control mediumtxt" name="pwd" placeholder="12345678">
 				</div> 
 			<button class="btn cancel" type="button">Cancel</button>
@@ -77,24 +77,24 @@
 		</div>
 		<div id="pg-settings" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="settings">
-				<div class="form-group input-group mediumgrp">
-					<label for="steamohms">Steam Heater Resistance </label>
-					<input type="text" class="form-control" name="steamohms" placeholder="10">
+				<div class="form-group input-group cfggrp">
+					<label for="sR">Steam Heater Resistance </label>
+					<input type="text" class="form-control" name="sR" placeholder="10">
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
 				</div>
-				<div class="form-group input-group mediumgrp">
-					<label for="steamduty">Max Duty Cycle </label>
-					<input type="text" class="form-control" name="steamduty" placeholder="100">
+				<div class="form-group input-group cfggrp">
+					<label for="sD">Max Duty Cycle </label>
+					<input type="text" class="form-control" name="sD" placeholder="100">
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
-				<div class="form-group input-group mediumgrp">
-					<label for="headsohms">Heads Heater Resistance</label>
-					<input type="text" class="form-control" name="headsohms" placeholder="32">
+				<div class="form-group input-group cfggrp">
+					<label for="hR">Heads Heater Resistance</label>
+					<input type="text" class="form-control" name="hR" placeholder="32">
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
 				</div>
-				<div class="form-group input-group mediumgrp">
-					<label for="headsduty">Max Duty Cycle </label>
-					<input type="text" class="form-control" name="headsduty" placeholder="100">
+				<div class="form-group input-group cfggrp">
+					<label for="hD">Max Duty Cycle </label>
+					<input type="text" class="form-control" name="hD" placeholder="100">
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
 				<button class="btn cancel" type="button">Cancel</button>
@@ -103,40 +103,51 @@
 		</div>
 		<div id="pg-calibrate" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="calibrate">
-				<div class="form-group input-group mediumgrp">
-					<label for="volts">Voltage Now</label>
-					<input type="text" class="form-control" name="volts" placeholder="36">
+				<div class="form-group input-group smallgrp">
+					<label for="vN">Voltage Now</label>
+					<input type="text" class="form-control" id="volts_now" name="vN" placeholder="">
 					<div class="input-group-append"><span class="input-group-text"> volts </span></div>
-				</div>
-				<div class="form-group input-group mediumgrp"></div>
-				<div class="form-group input-group mediumgrp">
-					<label for="waterflowmax">Water Flow - High</label>
-					<input type="text" class="form-control" name="waterflowmax" placeholder="10">
-					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+					<button id="voltset" class="btn btn-danger" type="button">-set-</button>
 				</div>
 				<div class="form-group input-group mediumgrp">
-					<label for="waterflowmin">Water Flow - Low</label>
-					<input type="text" class="form-control" name="waterflowmin" placeholder="5">
+					<label for="valve">Flow Rates</label>
+					<select class="form-control" id="valve">
+					  <option value="0">Water</option>
+					  <option value="1">Wash</option>
+					  <option value="2">Feed</option>
+					  <option value="3">Ferm 1</option>
+					  <option value="4">Ferm 2</option>
+					</select>
+					<select class="form-control" id="rate">
+					  <option value="0">Full</option>
+					  <option value="1">Empty</option>
+					</select>
+					<input type="text" class="form-control" id="flow" placeholder="10">
 					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+					<button id="flowset" class="btn btn-danger" type="button">-set-</button>
 				</div>
-				<div class="form-group input-group mediumgrp">
-					<label for="washflowmax">Wash Flow - High</label>
-					<input type="text" class="form-control" name="washflowmax" placeholder="10">
-					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
+				<div class="form-group input-group widegrp">
+					<label for="sid">Sensor IDs</label>
+					<select class="form-control" id="sid">
+					  <option value="0">Heads</option>
+					  <option value="1">Hearts</option>
+					  <option value="2">Mid</option>
+					  <option value="3">Base</option>
+					  <option value="4">Tails</option>
+					  <option value="5">Steam</option>
+					  <option value="6">Ferm 1</option>
+					  <option value="7">Ferm 2</option>
+					</select>
+					<select class="form-control" id="tid"></select>
+					<button id="senset" class="btn btn-danger" type="button">-set-</button>
 				</div>
-				<div class="form-group input-group mediumgrp">
-					<label for="washflowmin">Wash Flow - Low</label>
-					<input type="text" class="form-control" name="washflowmin" placeholder="5">
-					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
-				</div>
-				<button class="btn cancel" type="button">Cancel</button>
-				<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
+				<div class="form-group input-group"></div>
 			</form>
 		</div>
 		<div id="pg-about" class="tab-pane col-xs-9 cfg">
 			Vodak32 micro-Still <br>
 			(C) Copyright 2023 neocogent.<br>
-			Visit <a href="https://github.com/neocogent/vodak32" target="_blank" rel="noopener noreferrer">https://github.com/neocogent/vodak32</a><br>
+			Project Home: <a class="about" href="https://github.com/neocogent/vodak32" target="_blank" rel="noopener noreferrer">https://github.com/neocogent/vodak32</a><br>
 		</div>
 	</div>
 </div>
