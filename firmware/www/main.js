@@ -14,22 +14,37 @@
 		if(typeof data != "object")
 			$('#title').css('color', 'blue');
 		if(data.cfg != undefined) {
+			$('#ssid').val(data.cfg.ssid);
+			$('#pwd').val(data.cfg.pwd);
+			$('#sR').val(data.cfg.sR);
+			$('#sD').val(data.cfg.sD);
+			$('#hR').val(data.cfg.hR);
+			$('#hD').val(data.cfg.hD);
 			//poll = parseInt(data.cfg.poll)*1000;
 			datareq = {};
 		}
-		// store temps in correct readouts
-		$('#tH').text(data.tempC[0]);
-		$('#tP').text(data.tempC[1]);
-		$('#tM').text(data.tempC[2]);
-		$('#tB').text(data.tempC[3]);
+		// store op data in main screen readouts
+		$('#tH .lcdvalue').text(data.temp[0]+' °C');
+		$('#tP .lcdvalue').text(data.temp[1]+' °C');
+		$('#tM .lcdvalue').text(data.temp[2]+' °C');
+		$('#tB .lcdvalue').text(data.temp[3]+' °C');
+		$('#tS .lcdvalue').text(data.temp[5]+' °C');
+		$('#tT .lcdvalue').text(data.temp[4]+' °C');
+		$('#tF .lcdvalue').text(data.temp[6]+' °C'); //only showing Ferm1 for now
+		$('#pS .lcdvalue').text(data.steam+' W');
+		$('#pH .lcdvalue').text(data.heads+' W');
+		$('#fS .lcdvalue').text(data.flows[0]+' M');
+		$('#fW .lcdvalue').text(data.flows[1]+' M');
+		$('#fF .lcdvalue').text(data.flows[3]+' M'); // only showing Ferm1 for now
 		
 		// add temps cfg dropdown with ids
+		var now = $("#tid").prop("selectedIndex");
 		$('#tid').empty();
-		$.each(data.cfg.tempC, function(n,e) {
-			$('#tid').append($('<option>', { value:n, text:'#'+n+' '+e+' °C' } ));
+		$.each(data.temp, function(n,e) {
+			$('#tid').append($('<option>', { value:n, text:'#'+n+' - '+e+' °C' } ));
 			});
-		$('#volts_now').text(data.volts);
-		
+		$("#tid").prop("selectedIndex", now);
+		$('#volts_now').val(data.volts);
 	}
 	
 	function postCfg( e ) {

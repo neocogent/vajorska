@@ -23,8 +23,8 @@
 #define VER_PATCH	0
 
 // wifi defaults
-#define DEF_SSID "Lucy" //"Vodak32"
-#define DEF_PASSWORD "markesmith" //"12345678"
+#define DEF_SSID "Vodak32"
+#define DEF_PASSWORD "12345678"
 #define WIFI_TIMEOUT 10
 #define DEF_TIMEZONE 10*3600
 
@@ -143,16 +143,16 @@ void sendJsonData(AsyncWebServerRequest *request){
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
       flows.add(flow_rates[i][2]);
-    data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / (1<<PWM_WIDTH); // power depends on voltage and duty cycle, R const
-    data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / (1<<PWM_WIDTH);
+    data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / ((1<<PWM_WIDTH)-1); // power depends on voltage and duty cycle, R const
+    data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / ((1<<PWM_WIDTH)-1);
     if(request->hasParam("cfg")){ // send cfg data only when requested
       JsonObject& cfg = data.createNestedObject("cfg"); 
 			cfg["ssid"] = ssid;
 			cfg["pwd"] = password;
 			cfg["sR"] = steam_ohms;
-			cfg["sD"] = max_steam_duty;
+			cfg["sD"] = max_steam_duty*100/((1<<PWM_WIDTH)-1);
 			cfg["hR"] = heads_ohms;
-			cfg["hD"] = max_heads_duty;
+			cfg["hD"] = max_heads_duty*100/((1<<PWM_WIDTH)-1);
 			cfg["sfh"] = (float)flow_rates[FLOW_STEAM][0]/20;
 			cfg["sfl"] = (float)flow_rates[FLOW_STEAM][1]/20;
 			cfg["wfh"] = (float)flow_rates[FLOW_WASH][0]/20;
@@ -171,6 +171,7 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		nvs.putString("ssid", ssid);
 		nvs.putString("password", password);
 		nvs.end();
+		DBG_INFO("Saved wifi cfg.");
 	}
 	nvs.begin("cfg");
 	if(request->hasParam("sR", true)){
@@ -178,14 +179,16 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		heads_ohms = atof(request->getParam("hR", true)->value().c_str());
 		nvs.putFloat("steamohms", steam_ohms);
 		nvs.putFloat("headsohms", heads_ohms);
-		max_steam_duty = atoi(request->getParam("sD", true)->value().c_str());
-		max_heads_duty = atoi(request->getParam("hD", true)->value().c_str());
+		max_steam_duty = atoi(request->getParam("sD", true)->value().c_str())*((1<<PWM_WIDTH)-1)/100;
+		max_heads_duty = atoi(request->getParam("hD", true)->value().c_str())*((1<<PWM_WIDTH)-1)/100;
 		nvs.putUInt("maxsteam", max_steam_duty);
 		nvs.putUInt("maxheads", max_heads_duty);
+		DBG_INFO("Saved power cfg.");
 	}
-  if(request->hasParam("vN", true) && request->getParam("vN", true)->value() != ""){
-		volts_max = atof(request->getParam("vN", true)->value().c_str()) * 4095 / analogRead(VOLT_SENSOR); // calibrate if user gave volts_now
+  if(request->hasParam("vN", true) && volts_now != 0){
+		volts_max = atof(request->getParam("vN", true)->value().c_str()) * 4095 / volts_now; // calibrate with user vN value
 		nvs.putFloat("voltsmax", volts_max);
+		DBG_INFO("Saved volts calibration.");
 	}
 	if(request->hasParam("valve", true)){
 		char key[4] = "Fxx";
@@ -195,6 +198,7 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		key[1] = 0x30+valve;
 		key[2] = 0x30+rate;
 		nvs.putUInt(key, flow_rates[valve][rate]);
+		DBG_INFO("Saved flow calibration: %s.", key);
 	}
 	if(request->hasParam("sid", true)){
 		char key[3] = "Sx";
@@ -208,14 +212,14 @@ void onSaveCfg(AsyncWebServerRequest *request){
     tempC[sid] = tempC[tid];
 		memcpy(sens_addrs[tid], swapAddr, 8);
     tempC[tid] = swapC;
-		key[1] = 0x41+sid;
+		key[1] = 0x30+sid;
 		nvs.putBytes(key, sens_addrs[sid], 8);
-		key[1] = 0x41+tid;
+		key[1] = 0x30+tid;
 		nvs.putBytes(key, sens_addrs[tid], 8);
+		DBG_INFO("Saved sensor assignment: %s.", key);
 	}
 	nvs.end();
   request->redirect("/data?cfg=true");
-  DBG_INFO("Saved Cfg.");
 }
 void onRunChg(AsyncWebServerRequest *request){
   if(request->hasParam("on", true))
@@ -280,7 +284,7 @@ void setup() {
   char key[4] = "Sx\0";
   nvs.begin("onewire");
   for(int i = 0; i < SENSOR_COUNT; i++) {
-		key[1] = i + 0x41;
+		key[1] = i + 0x30;
     nvs.getBytes(key, sens_addrs[i], 8);
 	 }
 	 
@@ -303,7 +307,7 @@ void setup() {
 		}
 		if(j == SENSOR_COUNT){
 			if(empty_slot != 0xFF){
-				key[1] = empty_slot + 0x41;
+				key[1] = empty_slot + 0x30;
 				memcpy(sens_addrs[empty_slot], tmpAddr, 8);
 				nvs.putBytes(key, sens_addrs[empty_slot], 8);
 			}
@@ -320,8 +324,8 @@ void setup() {
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
-  max_steam_duty = nvs.getUInt("maxsteam", 1<<PWM_WIDTH-1);
-  max_heads_duty= nvs.getUInt("maxheads", 1<<PWM_WIDTH-1);
+  max_steam_duty = nvs.getUInt("maxsteam", (1<<PWM_WIDTH)-1);
+  max_heads_duty= nvs.getUInt("maxheads", (1<<PWM_WIDTH)-1);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {

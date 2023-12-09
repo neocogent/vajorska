@@ -43,33 +43,33 @@
 					<div class="lcdclock" id="timerOFF">OFF --:--</div>
 				</div>
 				
-				<div id="tP" class="module"><span>Hearts Temp</span><div class="lcdvalue">78.2 °C</div></div>
-				<div id="tM" class="module"><span>Mid Temp</span><div class="lcdvalue">79 °C</div></div>
-				<div id="tB" class="module"><span>Base Temp</span><div class="lcdvalue">95 °C</div></div>
+				<div id="tP" class="module"><span>Hearts Temp</span><div class="lcdvalue">-- °C</div></div>
+				<div id="tM" class="module"><span>Mid Temp</span><div class="lcdvalue">-- °C</div></div>
+				<div id="tB" class="module"><span>Base Temp</span><div class="lcdvalue">-- °C</div></div>
 				
 				
-				<div id="pS" class="module"><span>Steam Power</span><div class="lcdvalue">118 W</div></div>
-				<div id="tS" class="module"><span>Steam Temp</span><div class="lcdvalue">105 °C</div></div>
-				<div id="fS" class="module"><span>Steam Flow</span><div class="lcdvalue">2.6 M</div></div>
+				<div id="pS" class="module"><span>Steam Power</span><div class="lcdvalue">--- W</div></div>
+				<div id="tS" class="module"><span>Steam Temp</span><div class="lcdvalue">-- °C</div></div>
+				<div id="fS" class="module"><span>Steam Flow</span><div class="lcdvalue">-- M</div></div>
 				
-				<div id="pH" class="module"><span>Heads Power</span><div class="lcdvalue">30 W</div></div>
-				<div id="tH" class="module"><span>Heads Temp</span><div class="lcdvalue">68.5 °C</div></div>
-				<div id="tT" class="module"><span>Tails Temp</span><div class="lcdvalue">95 °C</div></div>
+				<div id="pH" class="module"><span>Heads Power</span><div class="lcdvalue">-- W</div></div>
+				<div id="tH" class="module"><span>Heads Temp</span><div class="lcdvalue">-- °C</div></div>
+				<div id="tT" class="module"><span>Tails Temp</span><div class="lcdvalue">-- °C</div></div>
 				
-				<div id="fW" class="module"><span>Wash Flow</span><div class="lcdvalue">6.5 M</div></div>
-				<div id="fF" class="module"><span>Ferms Flow</span><div class="lcdvalue">6.5 M</div></div>
-				<div id="tF" class="module"><span>Ferms Temp</span><div class="lcdvalue">24 °C</div></div>
+				<div id="fW" class="module"><span>Wash Flow</span><div class="lcdvalue">-- M</div></div>
+				<div id="fF" class="module"><span>Ferms Flow</span><div class="lcdvalue">-- M</div></div>
+				<div id="tF" class="module"><span>Ferms Temp</span><div class="lcdvalue">-- °C</div></div>
 			</div>
 		</div>
 		<div id="pg-wifi" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="wifi">
 				<div class="form-group">
 					<label for="ssid">SSID</label>
-					<input type="text" class="form-control mediumtxt" name="ssid" placeholder="vodak32">
+					<input type="text" class="form-control mediumtxt" id="ssid" name="ssid" placeholder="vodak32">
 				</div>
 				<div class="form-group">
 					<label for="pwd">Password</label>
-					<input type="text" class="form-control mediumtxt" name="pwd" placeholder="12345678">
+					<input type="text" class="form-control mediumtxt" id="pwd" name="pwd" placeholder="12345678">
 				</div> 
 			<button class="btn cancel" type="button">Cancel</button>
 			<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
@@ -79,22 +79,22 @@
 			<form class="update" id="settings">
 				<div class="form-group input-group cfggrp">
 					<label for="sR">Steam Heater Resistance </label>
-					<input type="text" class="form-control" name="sR" placeholder="10">
+					<input type="text" class="form-control" id="sR" name="sR" placeholder="10">
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
 				</div>
 				<div class="form-group input-group cfggrp">
 					<label for="sD">Max Duty Cycle </label>
-					<input type="text" class="form-control" name="sD" placeholder="100">
+					<input type="text" class="form-control" id="sD" name="sD" placeholder="100">
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
 				<div class="form-group input-group cfggrp">
 					<label for="hR">Heads Heater Resistance</label>
-					<input type="text" class="form-control" name="hR" placeholder="32">
+					<input type="text" class="form-control" id="hR" name="hR" placeholder="32">
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
 				</div>
 				<div class="form-group input-group cfggrp">
 					<label for="hD">Max Duty Cycle </label>
-					<input type="text" class="form-control" name="hD" placeholder="100">
+					<input type="text" class="form-control" id="hD" name="hD" placeholder="100">
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
 				<button class="btn cancel" type="button">Cancel</button>
