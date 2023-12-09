@@ -1,6 +1,7 @@
 (function($){
 	
 	var refresh = null, poll = 10000, datareq = { 'cfg' : true };
+	var flowrates = [];
 	
 	function Refresh() {
 		$.get('/data', datareq, UpdateData )
@@ -20,7 +21,9 @@
 			$('#sD').val(data.cfg.sD);
 			$('#hR').val(data.cfg.hR);
 			$('#hD').val(data.cfg.hD);
-			//poll = parseInt(data.cfg.poll)*1000;
+			flowrates = [];
+			flowrates.push(data.cfg.hfr);
+			flowrates.push(data.cfg.lfr);
 			datareq = {};
 		}
 		// store op data in main screen readouts
@@ -46,6 +49,9 @@
 		$("#tid").prop("selectedIndex", now);
 		$('#volts_now').val(data.volts);
 	}
+	function flowchg( e ) {
+		$('#flow').val( flowrates[ $('#rate').find(":selected").val() ][ $('#valve').find(":selected").val() ] );
+	}
 	
 	function postCfg( e ) {
 			$.post( '/cfg', $(this).serialize(), function(data) {});
@@ -59,7 +65,7 @@
 	function flowset( e ) {
 		$.post( '/cfg', { 
 				"valve":$('#valve').find(":selected").val(), 
-				"rate": $('#flow').find(":selected").val(), 
+				"rate": $('#rate').find(":selected").val(), 
 				"flow": $('#flow').val() 
 				}, function(data) {});
 		e.preventDefault();
@@ -92,6 +98,8 @@
 		$('#voltset').on('click', voltset );
 		$('#flowset').on('click', flowset );
 		$('#senset').on('click', senset );
+		$('#valve').on('change', flowchg );
+		$('#rate').on('change', flowchg );
 
 		Refresh();
     });

@@ -142,7 +142,7 @@ void sendJsonData(AsyncWebServerRequest *request){
     data["run"] = bRunning;
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
-      flows.add(flow_rates[i][2]);
+      flows.add(flow_rates[i][2]/20);
     data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / ((1<<PWM_WIDTH)-1); // power depends on voltage and duty cycle, R const
     data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / ((1<<PWM_WIDTH)-1);
     if(request->hasParam("cfg")){ // send cfg data only when requested
@@ -153,10 +153,12 @@ void sendJsonData(AsyncWebServerRequest *request){
 			cfg["sD"] = max_steam_duty*100/((1<<PWM_WIDTH)-1);
 			cfg["hR"] = heads_ohms;
 			cfg["hD"] = max_heads_duty*100/((1<<PWM_WIDTH)-1);
-			cfg["sfh"] = (float)flow_rates[FLOW_STEAM][0]/20;
-			cfg["sfl"] = (float)flow_rates[FLOW_STEAM][1]/20;
-			cfg["wfh"] = (float)flow_rates[FLOW_WASH][0]/20;
-			cfg["wfl"] = (float)flow_rates[FLOW_WASH][1]/20;
+			JsonArray& highrates = cfg.createNestedArray("hfr");
+			for(int i=0; i < FLOW_COUNT; i++)
+				highrates.add(flow_rates[i][0]/20);
+			JsonArray& lowrates = cfg.createNestedArray("lfr");
+			for(int i=0; i < FLOW_COUNT; i++)
+				lowrates.add(flow_rates[i][1]/20);
 			}
 		data.printTo(*response);
 		request->send(response);
@@ -191,17 +193,17 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		DBG_INFO("Saved volts calibration.");
 	}
 	if(request->hasParam("valve", true)){
-		char key[4] = "Fxx";
+		char key[] = "Fxx";
 		uint8_t valve = atoi(request->getParam("valve", true)->value().c_str());
 		uint8_t rate = atoi(request->getParam("rate", true)->value().c_str());
 		flow_rates[valve][rate] = atoi(request->getParam("flow", true)->value().c_str())*20;
-		key[1] = 0x30+valve;
-		key[2] = 0x30+rate;
+		key[1] = 0x30 + valve;
+		key[2] = 0x30 + rate;
 		nvs.putUInt(key, flow_rates[valve][rate]);
 		DBG_INFO("Saved flow calibration: %s.", key);
 	}
 	if(request->hasParam("sid", true)){
-		char key[3] = "Sx";
+		char key[] = "Sx";
     float swapC;
 		DeviceAddress swapAddr;
 		uint8_t sid = atoi(request->getParam("sid", true)->value().c_str());
@@ -329,9 +331,9 @@ void setup() {
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
   for(int i = 0; i < FLOW_COUNT; i++) {
-		key[2] = i + 0x30;
+		key[1] = i + 0x30;
 		for(int j = 0; j < 3; j++){
-			key[3] = j + 0x30;
+			key[2] = j + 0x30;
 			flow_rates[i][j] = nvs.getUInt(key, 0);
 		}
 	 }
