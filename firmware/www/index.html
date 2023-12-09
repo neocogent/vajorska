@@ -11,7 +11,7 @@
 <body>
 <div class="container centered">
 	<div id="main" class="col-xs-12">
-		<nav class="navbar navbar-light light-blue lighten-4">
+		<nav class="navbar navbar-light light-blue lighten-4 navodak">
 		<div><h2 id="title" class="navbar_brand" href="#">Vodak32</h2>
 		</div>
 		<button class="navbar-toggler toggler-example menucfg" type="button" data-toggle="collapse" data-target="#cfgmenu"
@@ -31,14 +31,14 @@
 	<div id="pgs" class="tab-content">
 		<div id="pg-main" class="tab-pane active col-xs-9">		
 			<div class="row">
-				<canvas id="status" class="" width="280" height="80"></canvas>
+				<canvas id="status" class="" height="80"></canvas>
 			</div>
 			<div class="row">
-				<div class="custom-control custom-switch custom-switch-xl">
+				<div class="custom-control custom-switch custom-switch-xl onoff">
 					<input type="checkbox" class="custom-control-input" id="run">
 					<label class="custom-control-label bignbold" for="run">ON</label>
 				</div>
-				<div>
+				<div class="timeronoff">
 					<div class="lcdclock" id="timerON">ON --:--</div>
 					<div class="lcdclock" id="timerOFF">OFF --:--</div>
 				</div>
@@ -72,7 +72,7 @@
 					<input type="text" class="form-control mediumtxt" id="pwd" name="pwd" placeholder="12345678">
 				</div> 
 			<button class="btn cancel" type="button">Cancel</button>
-			<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
+			<button class="btn btn-primary btn-submit" type="submit">Save</button>
 			</form>
 		</div>
 		<div id="pg-settings" class="tab-pane col-xs-9 cfg">
@@ -98,7 +98,7 @@
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
 				<button class="btn cancel" type="button">Cancel</button>
-				<button class="btn btn-primary btn-submit" type="submit"><span class="fa fa-hdd" aria-hidden="true"></span> Save</button>
+				<button class="btn btn-primary btn-submit" type="submit">Save</button>
 			</form>
 		</div>
 		<div id="pg-calibrate" class="tab-pane col-xs-9 cfg">
@@ -147,7 +147,7 @@
 		<div id="pg-about" class="tab-pane col-xs-9 cfg">
 			Vodak32 micro-Still <br>
 			(C) Copyright 2023 neocogent.<br>
-			Project Home: <a class="about" href="https://github.com/neocogent/vodak32" target="_blank" rel="noopener noreferrer">https://github.com/neocogent/vodak32</a><br>
+			Project Home: <br><a class="about" href="https://github.com/neocogent/vodak32" target="_blank" rel="noopener noreferrer">https://github.com/neocogent/vodak32</a><br>
 		</div>
 	</div>
 </div>
