@@ -30,7 +30,7 @@ First rough draft of web app interface:
 
 ## Materials List
 
-A [LibreCalc worksheet](docs/Materials%20List.ods) and [pdf](docs/Materials%20List.pdf) are included detailing reqquired/optional build items and current cossts. You can use this to plug in your own costs and figure total build cost. For me it works out to under $100 USD.
+A [LibreCalc worksheet](docs/Materials%20List.ods) and [pdf](docs/Materials%20List.pdf) are included detailing required/optional build items and current costs. You can use this to plug in your own prices and estimate total build cost. For me it works out to under $100 USD.
 
 ## Docs and Tutorials
 
