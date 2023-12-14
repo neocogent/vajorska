@@ -78,6 +78,12 @@
 #define FLOW_FERM1	3
 #define FLOW_FERM2	4
 
+typedef struct vtime {
+  uint8_t mins;
+  uint8_t hrs;
+  bool once;
+} vtime;
+
 String ssid;
 String password;
 
@@ -91,6 +97,7 @@ float volts_max, volts_now;
 float steam_ohms, heads_ohms;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty;
 uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
+vtime timerOn = {0,0,false}, timerOff = {0,0,false};
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
 uint8_t state_now = STATE_SLEEP;
@@ -220,6 +227,26 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		nvs.putBytes(key, sens_addrs[tid], 8);
 		DBG_INFO("Saved sensor assignment: %s.", key);
 	}
+	if(request->hasParam("onHr", true)){
+		int h = atoi(request->getParam("onHr", true)->value().c_str());
+		int m = atoi(request->getParam("onMin", true)->value().c_str());
+		int once = atoi(request->getParam("onOnce", true)->value().c_str());
+		if(h < 24 && h >=0 && m < 60 && m >= 0){
+			timerOn.hrs = h;
+			timerOn.mins = m;
+			timerOn.once = once;
+		}
+		h = atoi(request->getParam("offHr", true)->value().c_str());
+		m = atoi(request->getParam("offMin", true)->value().c_str());
+		once = atoi(request->getParam("offOnce", true)->value().c_str());
+		if(h < 24 && h >=0 && m < 60 && m >= 0){
+			timerOff.hrs = h;
+			timerOff.mins = m;
+			timerOff.once = once;
+		}		
+		nvs.putBytes("timerOn", &timerOn, 3);
+		nvs.putBytes("timerOff", &timerOff, 3);
+	}
 	nvs.end();
   request->redirect("/data?cfg=true");
 }
@@ -337,6 +364,8 @@ void setup() {
 			flow_rates[i][j] = nvs.getUInt(key, 0);
 		}
 	 }
+	nvs.getBytes("timerOn", &timerOn, 3);
+	nvs.getBytes("timerOff", &timerOff, 3);
   nvs.end();
   
   // enable real time clock and ntp syncs

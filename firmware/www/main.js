@@ -100,6 +100,9 @@
 		$('#senset').on('click', senset );
 		$('#valve').on('change', flowchg );
 		$('#rate').on('change', flowchg );
+		$('#timerbtn').on('click', function() { $('#timerpane').removeClass('d-none');});
+		$('#timerpane button').on('click', function() { $('#timerpane').addClass('d-none');});
+		$('#timer').on('submit', postCfg );
 
 		Refresh();
     });
