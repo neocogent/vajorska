@@ -7,7 +7,7 @@ A work in progress... I've ordered parts and while waiting I am fleshing out the
 
 **Goal**: Build a small "personal" still which can run on low power, off grid, solar systems without costing too much. An ideal would be requiring only 120W of power by utilizing a continuous steam injection process. An ESP32 has been chosen to control the various parts so that eventually it can run optimally on it's own. It could either run "as the sun shines" with direct power or if large batteries are available then it could run up to 24 hours/day. The target is producing about one bottle of 40% vodka per 6 hour sunny day with marginal cost being only the sugar and nutrients input.
 
-**Credits**: This whole thing was inspired by the youtube channel "**[tight](https://www.youtube.com/@tight1449/videos)**", which provides videos desscribing the various aspects of the continuous process as implemented for a small still capable of non-stop operation producing around 1L/day 96% ethanol output. I have taken his technical info and adapted it into a small "package" prioritising low power and adding the continuous fermentation stages.
+**Credits**: This whole thing was inspired by the youtube channel "**[tight](https://www.youtube.com/@tight1449/videos)**", which provides videos describing the various aspects of the continuous process as implemented for a small still capable of non-stop operation producing around 1L/day 96% ethanol output. I have taken his technical info and adapted it into a small "package" prioritising low power and adding the continuous fermentation stages.
 
 ## Overview
 
