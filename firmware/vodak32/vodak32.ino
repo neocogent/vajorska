@@ -97,6 +97,7 @@ float volts_max, volts_now;
 float steam_ohms, heads_ohms;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty;
 uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
+uint16_t tank_levels[FLOW_COUNT][2];  // full/now pairs in millilitres
 vtime timerOn = {0,0,false}, timerOff = {0,0,false};
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
@@ -182,7 +183,7 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		nvs.end();
 		DBG_INFO("Saved wifi cfg.");
 	}
-	nvs.begin("cfg");
+	nvs.begin("config");
 	if(request->hasParam("sR", true)){
 		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
 		heads_ohms = atof(request->getParam("hR", true)->value().c_str());
@@ -208,6 +209,16 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		key[2] = 0x30 + rate;
 		nvs.putUInt(key, flow_rates[valve][rate]);
 		DBG_INFO("Saved flow calibration: %s.", key);
+	}
+	if(request->hasParam("tank", true)){
+		char key[] = "Txx";
+		uint8_t tank = atoi(request->getParam("tank", true)->value().c_str());
+		uint8_t level = atoi(request->getParam("level", true)->value().c_str());
+		tank_levels[tank][level] = atoi(request->getParam("volume", true)->value().c_str());
+		key[1] = 0x30 + tank;
+		key[2] = 0x30 + level;
+		nvs.putUInt(key, tank_levels[tank][level]);
+		DBG_INFO("Saved tank levels: %s.", key);
 	}
 	if(request->hasParam("sid", true)){
 		char key[] = "Sx";
@@ -256,6 +267,18 @@ void onRunChg(AsyncWebServerRequest *request){
   request->send(200);
   DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
 }
+void onReset(AsyncWebServerRequest *request){
+	if(request->hasParam("sensors")){
+		char key[] = "Sx";
+		nvs.begin("config");
+		for(int i = 0; i < SENSOR_COUNT; i++) {
+			key[1] = i + 0x30;
+			nvs.remove(key);
+		}
+		nvs.end();
+		DBG_INFO("Sensors reset.");
+	}
+}
 
 void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
 
@@ -271,7 +294,7 @@ void setup() {
     digitalWrite(outpins[i], LOW);
   }
   
-    // initialize SPIFFS
+  // initialize SPIFFS
   if(!SPIFFS.begin(true)){
     DBG_ERROR("Error while mounting SPIFFS");
     return;
@@ -309,9 +332,11 @@ void setup() {
 	}
 	DBG_INFO("WiFi up at: %s", secs < WIFI_TIMEOUT ? WiFi.localIP().toString() : WiFi.softAPIP().toString());
   
+  
+  nvs.begin("config");
+  
   // load temperature sensor ids 
-  char key[4] = "Sx\0";
-  nvs.begin("onewire");
+  char key[] = "Sx\0";
   for(int i = 0; i < SENSOR_COUNT; i++) {
 		key[1] = i + 0x30;
     nvs.getBytes(key, sens_addrs[i], 8);
@@ -344,12 +369,9 @@ void setup() {
 				DBG_WARNING("Sensor found but no empty slots.");
 		}
 	}
-	nvs.end();
 
   // read config values
-	key[0] = 'F';
   DBG_INFO("Loading config.");
-  nvs.begin("config", true);
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
@@ -357,6 +379,7 @@ void setup() {
   max_heads_duty= nvs.getUInt("maxheads", (1<<PWM_WIDTH)-1);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
   daylightOffset_sec = nvs.getInt("dstoffset", 0);
+  key[0] = 'F'; // flow_rates key
   for(int i = 0; i < FLOW_COUNT; i++) {
 		key[1] = i + 0x30;
 		for(int j = 0; j < 3; j++){
@@ -364,8 +387,17 @@ void setup() {
 			flow_rates[i][j] = nvs.getUInt(key, 0);
 		}
 	 }
+	key[0] = 'T'; // tank_levels key
+  for(int i = 0; i < FLOW_COUNT; i++) {
+		key[1] = i + 0x30;
+		for(int j = 0; j < 3; j++){
+			key[2] = j + 0x30;
+			tank_levels[i][j] = nvs.getUInt(key, 0);
+		}
+	 }
 	nvs.getBytes("timerOn", &timerOn, 3);
 	nvs.getBytes("timerOff", &timerOff, 3);
+	
   nvs.end();
   
   // enable real time clock and ntp syncs
@@ -382,6 +414,7 @@ void setup() {
   server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){ sendJsonData(request); });
   server.on("/cfg", HTTP_POST, [](AsyncWebServerRequest *request){ onSaveCfg(request); });
   server.on("/run", HTTP_POST, [](AsyncWebServerRequest *request){ onRunChg(request); });
+  server.on("/reset", HTTP_GET, [](AsyncWebServerRequest *request){ onReset(request); });
 
   AsyncElegantOTA.begin(&server);
   server.begin();

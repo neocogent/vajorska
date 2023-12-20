@@ -145,6 +145,23 @@
 					<div class="input-group-append"><span class="input-group-text"> ml/min </span></div>
 					<button id="flowset" class="btn btn-danger" type="button">-set-</button>
 				</div>
+				<div class="form-group input-group mediumgrp">
+					<label for="valve">Tank Levels</label>
+					<select class="form-control" id="tank">
+					  <option value="0">Water</option>
+					  <option value="1">Wash</option>
+					  <option value="2">Feed</option>
+					  <option value="3">Ferm 1</option>
+					  <option value="4">Ferm 2</option>
+					</select>
+					<select class="form-control" id="level">
+					  <option value="0">Full</option>
+					  <option value="1">Now</option>
+					</select>
+					<input type="text" class="form-control" id="volume" placeholder="10000">
+					<div class="input-group-append"><span class="input-group-text"> ml </span></div>
+					<button id="tankset" class="btn btn-danger" type="button">-set-</button>
+				</div>
 				<div class="form-group input-group widegrp">
 					<label for="sid">Sensor IDs</label>
 					<select class="form-control" id="sid">

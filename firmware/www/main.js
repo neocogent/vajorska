@@ -70,6 +70,14 @@
 				}, function(data) {});
 		e.preventDefault();
 	}
+	function tankset( e ) {
+		$.post( '/cfg', { 
+				"tank":$('#tank').find(":selected").val(), 
+				"level": $('#level').find(":selected").val(), 
+				"volume": $('#volume').val() 
+				}, function(data) {});
+		e.preventDefault();
+	}
 	function senset( e ) {
 		$.post( '/cfg', { 
 				"sid":$('#sid').find(":selected").val(), 
@@ -97,6 +105,7 @@
 		$('.update').on("submit", postCfg);
 		$('#voltset').on('click', voltset );
 		$('#flowset').on('click', flowset );
+		$('#tankset').on('click', tankset );
 		$('#senset').on('click', senset );
 		$('#valve').on('change', flowchg );
 		$('#rate').on('change', flowchg );
