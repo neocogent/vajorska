@@ -1,9 +1,9 @@
 # vodak32
 Low cost, low power, continuous micro-still using ESP32 to manage fermentation and distillation. Suitable for solar, off-grid or mobile, powered "just in time" (JIT) "do-it-yourself" (DIY) spirits production.
 
-Status: **Design/Planning stage** 
+Status: **Initial Build stage** 
 
-A work in progress... I've ordered parts and while waiting I am fleshing out the project design docs and setting up a development environment.
+A work in progress... Some parts have arrived, the controller is built and half the code done. Testing separate parts of system.
 
 **Goal**: Build a small "personal" still which can run on low power, off grid, solar systems without costing too much. An ideal would be requiring only 120W of power by utilizing a continuous steam injection process. An ESP32 has been chosen to control the various parts so that eventually it can run optimally on it's own. It could either run "as the sun shines" with direct power or if large batteries are available then it could run up to 24 hours/day. The target is producing about one bottle of 40% vodka per 6 hour sunny day with marginal cost being only the sugar and nutrients input.
 
