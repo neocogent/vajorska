@@ -31,14 +31,14 @@
 // pin connections
 #define ONE_WIRE_BUS 21
 #define VOLT_SENSOR  36
-#define STEAM_HEAT	 32
-#define HEADS_HEAT 	 33
-#define STEAM_VALVE  25
-#define WASH_VALVE   26
-#define FEED_VALVE   27
-#define FERM1_VALVE  14
-#define FERM2_VALVE  12
-#define XTRA_HEAT    13
+#define STEAM_HEAT	 14
+#define HEADS_HEAT 	 22
+#define STEAM_VALVE  13
+#define WASH_VALVE   12
+#define FEED_VALVE   26
+#define FERM1_VALVE  25
+#define FERM2_VALVE  33
+#define XTRA_HEAT    32
 
 // system parameters
 #define SENSOR_COUNT 8 // number of onewire devices on bus
