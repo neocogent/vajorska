@@ -51,6 +51,9 @@ body { background:#AAA; }
 .mediumgrp { width:340px; height:60px; float:left; }
 .mediumgrp .input-group-append { /*width:90px;*/ }
 .mediumgrp label { width: 100%; }
+.valvegrp { width:170px; height:60px; }
+.valvegrp .input-group-append { /*width:80px;*/ }
+.valvegrp label { width: 100%; }
 #valve { width:80px; }
 #rate { width:80px; }
 #flow { width:40px; margin-left: 5px; }

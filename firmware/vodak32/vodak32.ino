@@ -276,7 +276,6 @@ void onSaveCfg(AsyncWebServerRequest *request){
 void onRunChg(AsyncWebServerRequest *request){
   if(request->hasParam("on", true)){
     bRunning = request->getParam("on", true)->value() == "true";
-    request->send(200);
     DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
 	}
 	if(request->hasParam("open", true)){
@@ -284,6 +283,7 @@ void onRunChg(AsyncWebServerRequest *request){
 		float secs = atof(request->getParam("secs", true)->value().c_str()); // 0 behaves as toggle on/off
 		DBG_INFO("Open valve %1d for %1.1f seconds.", open, secs);
 	}
+	request->send(200);
 }
 void onReset(AsyncWebServerRequest *request){
 	if(request->hasParam("sensors")){
@@ -409,7 +409,7 @@ void setup() {
 	key[0] = 'T'; // tank_levels key
   for(int i = 0; i < FLOW_COUNT; i++) {
 		key[1] = i + 0x30;
-		for(int j = 0; j < 3; j++){
+		for(int j = 0; j < 2; j++){
 			key[2] = j + 0x30;
 			tank_levels[i][j] = nvs.getUInt(key, 0);
 		}
@@ -418,7 +418,7 @@ void setup() {
 	nvs.getBytes("timerOff", &timerOff, 3);
 	
   nvs.end();
-  
+
   // enable real time clock and ntp syncs
   struct tm timeinfo;
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);

@@ -83,42 +83,43 @@
 		</div>
 		<div id="pg-manual" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="manual">
-				<div class="form-group input-group smallgrp">
+				<div class="form-group input-group valvegrp">
 					<label for="v1">Feed Valve</label>
 					<input type="text" class="form-control" id="v1secs" name="v1" placeholder="0">
 					<div class="input-group-append"><span class="input-group-text"> secs </span></div>
 					<button id="v1" class="btn btn-danger btnvalve" type="button">-open-</button>
 				</div>
-				<div class="form-group input-group smallgrp">
+				<div class="form-group input-group valvegrp">
 					<label for="v2">Ferm1 Valve</label>
 					<input type="text" class="form-control" id="v2secs" name="v2" placeholder="0">
 					<div class="input-group-append"><span class="input-group-text"> secs </span></div>
 					<button id="v2" class="btn btn-danger btnvalve" type="button">-open-</button>
 				</div>
-				<div class="form-group input-group smallgrp">
+				<div class="form-group input-group valvegrp">
 					<label for="v3">Ferm2 Valve</label>
 					<input type="text" class="form-control" id="v3secs" name="v3" placeholder="0">
 					<div class="input-group-append"><span class="input-group-text"> secs </span></div>
 					<button id="v3" class="btn btn-danger btnvalve" type="button">-open-</button>
 				</div>
-				<div class="form-group input-group smallgrp">
+				<div class="form-group input-group valvegrp">
 					<label for="v4">Wash Valve</label>
 					<input type="text" class="form-control" id="v4secs" name="v4" placeholder="0">
 					<div class="input-group-append"><span class="input-group-text"> secs </span></div>
 					<button id="v4" class="btn btn-danger btnvalve" type="button">-open-</button>
 				</div>
-				<div class="form-group input-group smallgrp">
+				<div class="form-group input-group valvegrp">
 					<label for="v5">Steam Valve</label>
 					<input type="text" class="form-control" id="v5secs" name="v5" placeholder="0">
 					<div class="input-group-append"><span class="input-group-text"> secs </span></div>
 					<button id="v5" class="btn btn-danger btnvalve" type="button">-open-</button>
 				</div>
-				<div class="form-group input-group smallgrp">
+				<div class="form-group input-group valvegrp">
 					<label for="v6">Extra</label>
 					<input type="text" class="form-control" id="v6secs" name="v6" placeholder="0">
 					<div class="input-group-append"><span class="input-group-text"> secs </span></div>
 					<button id="v6" class="btn btn-danger btnvalve" type="button">-open-</button>
 				</div>
+				<div class="form-group input-group"></div>
 			</form>
 		</div>
 		<div id="pg-wifi" class="tab-pane col-xs-9 cfg">
@@ -137,7 +138,7 @@
 		</div>
 		<div id="pg-settings" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="settings">
-				<div class="form-group input-group mediumgrp">
+				<div class="form-group input-group smallgrp">
 					<label for="valve">Fermentation Mode</label>
 					<select class="form-control" id="opmode">
 					  <option value="0">None</option>
@@ -152,7 +153,7 @@
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
 				</div>
 				<div class="form-group input-group cfggrp">
-					<label for="sD">Max Duty Cycle </label>
+					<label for="sD">Steam Max Duty Cycle </label>
 					<input type="text" class="form-control" id="sD" name="sD" placeholder="100">
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
@@ -162,10 +163,11 @@
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
 				</div>
 				<div class="form-group input-group cfggrp">
-					<label for="hD">Max Duty Cycle </label>
+					<label for="hD">Heads Max Duty Cycle </label>
 					<input type="text" class="form-control" id="hD" name="hD" placeholder="100">
 					<div class="input-group-append"><span class="input-group-text"> % </span></div>
 				</div>
+				<div class="form-group input-group"></div>
 				<button class="btn cancel" type="button">Cancel</button>
 				<button class="btn btn-primary btn-submit" type="submit">Save</button>
 			</form>

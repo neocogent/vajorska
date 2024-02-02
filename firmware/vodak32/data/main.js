@@ -59,10 +59,9 @@
 			showmain();
 	}
 	function valveopen( e ) {
-		vID = e.attr('id');
 		$.post( '/run', { 
-			"open": vID, 
-			"secs": $('#'+vID+'secs').val() 
+			"open": e.target.id[1], 
+			"secs": $('#'+e.target.id+'secs').val() 
 			}, function(data) {});
 		e.preventDefault();
 	}
