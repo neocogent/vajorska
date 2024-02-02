@@ -40,9 +40,12 @@
 #define FERM2_VALVE  33
 #define XTRA_HEAT    32
 
+uint8_t fet_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_VALVE, XTRA_HEAT, STEAM_HEAT, HEADS_HEAT };
+
 // system parameters
 #define SENSOR_COUNT 8 // number of onewire devices on bus
 #define FLOW_COUNT   5 // number of valves
+#define FETS_COUNT		 8 // number of FET switches - 5 are valves, 2 heaters, 1 extra
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
@@ -104,6 +107,7 @@ float steam_ohms, heads_ohms;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, op_mode;
 uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 uint16_t tank_levels[FLOW_COUNT][2];  // full/now pairs in millilitres
+uint16_t on_fets[FETS_COUNT]; // tick counts for FETS enabled (on)
 vtime timerOn = {0,0,false}, timerOff = {0,0,false};
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
@@ -121,11 +125,19 @@ AsyncWebServer server(80);
 
 void IRAM_ATTR ticker()
 {
-  ticks++;
-  if((ticks % SENSOR_UPDATE_SECS)==0)
+  ticks++; // ticks are tenths of a second
+  if((ticks % (SENSOR_UPDATE_SECS*10))==0)
     sensorUpdate = true;
-  if((ticks % STATE_CYCLE_SECS)==0)
+  if((ticks % (STATE_CYCLE_SECS*10))==0)
     stateUpdate = true;
+	for(int i=0; i < FETS_COUNT; i++) {
+		if(on_fets[i] != 0) {
+			if(--on_fets[i] == 0)
+				digitalWrite(fet_pins[i], LOW); // close FET
+			else 
+				digitalWrite(fet_pins[i], HIGH); // open FET
+		}
+	}
 }
 
 void stateUpdateSleep(void){
@@ -279,9 +291,12 @@ void onRunChg(AsyncWebServerRequest *request){
     DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
 	}
 	if(request->hasParam("open", true)){
-		uint8_t open = atoi(request->getParam("open", true)->value().c_str());
-		float secs = atof(request->getParam("secs", true)->value().c_str()); // 0 behaves as toggle on/off
-		DBG_INFO("Open valve %1d for %1.1f seconds.", open, secs);
+		uint8_t valve = atoi(request->getParam("open", true)->value().c_str());
+		uint16_t tenths = atof(request->getParam("secs", true)->value().c_str())*10;
+		if(tenths == 0)
+			tenths = 10;
+		on_fets[valve-1] = tenths+1; // will open valve on next tick, with count down to close
+		DBG_INFO("Open valve %d for %d tenths.", valve, tenths);
 	}
 	request->send(200);
 }
@@ -448,7 +463,7 @@ void setup() {
   // setup tick timer for sensor reads and state machine
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &ticker, true);
-  timerAlarmWrite(timer, 1000000, true);
+  timerAlarmWrite(timer, 100000, true);
   timerAlarmEnable(timer);
   DBG_INFO("Ticker started.");
 }
