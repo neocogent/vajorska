@@ -58,13 +58,21 @@
 			e.preventDefault();
 			showmain();
 	}
+	function valveopen( e ) {
+		vID = e.attr('id');
+		$.post( '/run', { 
+			"open": vID, 
+			"secs": $('#'+vID+'secs').val() 
+			}, function(data) {});
+		e.preventDefault();
+	}
 	function voltset( e ) {
 		$.post( '/cfg', { "vN":$('#volts_now').val() }, function(data) {});
 		e.preventDefault();
 	}
 	function flowset( e ) {
 		$.post( '/cfg', { 
-				"valve":$('#valve').find(":selected").val(), 
+				"valve": $('#valve').find(":selected").val(), 
 				"rate": $('#rate').find(":selected").val(), 
 				"flow": $('#flow').val() 
 				}, function(data) {});
@@ -72,7 +80,7 @@
 	}
 	function tankset( e ) {
 		$.post( '/cfg', { 
-				"tank":$('#tank').find(":selected").val(), 
+				"tank": $('#tank').find(":selected").val(), 
 				"level": $('#level').find(":selected").val(), 
 				"volume": $('#volume').val() 
 				}, function(data) {});
@@ -80,14 +88,14 @@
 	}
 	function senset( e ) {
 		$.post( '/cfg', { 
-				"sid":$('#sid').find(":selected").val(), 
-				"tid":$('#tid').find(":selected").val() 
+				"sid": $('#sid').find(":selected").val(), 
+				"tid": $('#tid').find(":selected").val() 
 				}, function(data) {});
 		e.preventDefault();
 	}
 	
     function run( e ) {
-        $.post( '/run', {'on':$(this).is(':checked')}, function(data) {});
+        $.post( '/run', {'on': $(this).is(':checked')}, function(data) {});
     }
     
     function showmain(e) {
@@ -103,6 +111,7 @@
 		$('.menucfg').on('click', showmain );
 		$('.cancel').on('click', showmain );
 		$('.update').on("submit", postCfg);
+		$('.btnvalve').on('click', valveopen );
 		$('#voltset').on('click', voltset );
 		$('#flowset').on('click', flowset );
 		$('#tankset').on('click', tankset );

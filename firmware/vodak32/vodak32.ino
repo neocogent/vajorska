@@ -55,6 +55,12 @@
 #define PWM_WIDTH					8   // pwm bits
 #define PWM_HZ						100 // pwm frequency
 
+// op modes
+#define OP_MODE_NONE    		0 // no fermentation, wash and steam valves only
+#define OP_MODE_PREFILL 		1 // operate feed,ferm valves just to fill sep tank, no distilling
+#define OP_MODE_SYNC  			2 // sync all valves for distilling
+#define OP_MODE_DELAY_SYNC	3 // as above, but delay sep fill until after distill done
+
 // the machine states
 #define STATE_SLEEP 	0
 #define STATE_HEAT_UP 1
@@ -95,7 +101,7 @@ uint8_t outpins[] = {STEAM_HEAT,HEADS_HEAT,STEAM_VALVE,WASH_VALVE,FEED_VALVE,FER
 int numberOfSensors;
 float volts_max, volts_now;
 float steam_ohms, heads_ohms;
-uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty;
+uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, op_mode;
 uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 uint16_t tank_levels[FLOW_COUNT][2];  // full/now pairs in millilitres
 vtime timerOn = {0,0,false}, timerOff = {0,0,false};
@@ -182,8 +188,14 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		nvs.putString("password", password);
 		nvs.end();
 		DBG_INFO("Saved wifi cfg.");
+		return;
 	}
 	nvs.begin("config");
+	if(request->hasParam("opmode", true)){
+		op_mode = atoi(request->getParam("opmode", true)->value().c_str());
+		nvs.putUInt("opmode", op_mode);
+		DBG_INFO("Op mode set to %1d", op_mode);
+	}
 	if(request->hasParam("sR", true)){
 		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
 		heads_ohms = atof(request->getParam("hR", true)->value().c_str());
@@ -262,10 +274,16 @@ void onSaveCfg(AsyncWebServerRequest *request){
   request->redirect("/data?cfg=true");
 }
 void onRunChg(AsyncWebServerRequest *request){
-  if(request->hasParam("on", true))
+  if(request->hasParam("on", true)){
     bRunning = request->getParam("on", true)->value() == "true";
-  request->send(200);
-  DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
+    request->send(200);
+    DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
+	}
+	if(request->hasParam("open", true)){
+		uint8_t open = atoi(request->getParam("open", true)->value().c_str());
+		float secs = atof(request->getParam("secs", true)->value().c_str()); // 0 behaves as toggle on/off
+		DBG_INFO("Open valve %1d for %1.1f seconds.", open, secs);
+	}
 }
 void onReset(AsyncWebServerRequest *request){
 	if(request->hasParam("sensors")){
@@ -375,6 +393,7 @@ void setup() {
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
+  op_mode = nvs.getUInt("opmode", OP_MODE_NONE);
   max_steam_duty = nvs.getUInt("maxsteam", (1<<PWM_WIDTH)-1);
   max_heads_duty= nvs.getUInt("maxheads", (1<<PWM_WIDTH)-1);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
