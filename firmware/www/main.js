@@ -123,7 +123,7 @@
 		
 		$("a[href='#pg-log']").on('show.bs.tab', function(e) {
 			$.get( '/oplog', {}, function(data) {
-				$('#pg-log').text(data);
+				$('#oplog').text(data);
 				});
 		});
 

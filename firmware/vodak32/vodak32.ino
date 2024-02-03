@@ -9,6 +9,7 @@
 #include "ArduinoJson.h"
 #include "time.h"
 #include <string.h>
+#include <stdarg.h>
 
 #define DBG_ENABLE_ERROR
 #define DBG_ENABLE_WARNING
@@ -97,7 +98,6 @@ typedef struct vtime {
 
 String ssid;
 String password;
-File op_log;
 
 const char* ntpServer = "pool.ntp.org";
 long  gmtOffset_sec;
@@ -337,6 +337,22 @@ void onReset(AsyncWebServerRequest *request){
 	}
 }
 
+void OpLog(const char *fmt, ...){
+	struct tm timeinfo;
+	char buf[128];
+	getLocalTime(&timeinfo);
+	size_t n = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S ", &timeinfo);
+	
+	File file = SPIFFS.open("/oplog", "a");
+	//file.print(buf);
+  va_list args;
+	va_start(args, fmt);
+  vsnprintf(buf+n, sizeof(buf)-n, fmt, args);
+  va_end(args);
+  file.print(buf);
+  file.close();
+}
+
 void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
 
 void setup() {
@@ -356,12 +372,6 @@ void setup() {
     DBG_ERROR("Error while mounting SPIFFS");
     return;
   }
-  
-  // init op log
-  DBG_INFO("Opening Op Log.");
-  op_log = SPIFFS.open("/oplog", "a");
-  op_log.printf("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
-  op_log.close();
   
   // read wifi config if set, or use defaults
   nvs.begin("wifi", true);
@@ -474,6 +484,11 @@ void setup() {
     DBG_WARNING("Failed to obtain time.");
   else
 		DBG_INFO("Time: %d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+		
+	// init op log
+  SPIFFS.remove("/oplog.old");
+	SPIFFS.rename("/oplog", "/oplog.old");
+  OpLog("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
