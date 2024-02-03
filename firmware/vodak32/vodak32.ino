@@ -3,6 +3,7 @@
 #include "ESPAsyncWebServer.h"
 #include <AsyncElegantOTA.h>
 #include "SPIFFS.h"
+#include <SpiffsFilePrint.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "AsyncJson.h"
@@ -40,17 +41,19 @@
 #define FERM2_VALVE  33
 #define XTRA_HEAT    32
 
-uint8_t fet_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_VALVE, XTRA_HEAT, STEAM_HEAT, HEADS_HEAT };
-
 // system parameters
 #define SENSOR_COUNT 8 // number of onewire devices on bus
 #define FLOW_COUNT   5 // number of valves
-#define FETS_COUNT		 8 // number of FET switches - 5 are valves, 2 heaters, 1 extra
+#define FETS_COUNT	 6 // number of FET switches - 5 are valves, 1 extra (indexing first 6 outpins)
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
+#define FLOW_UPDATE_SECS		5  // interval for still flow cycle (secs)(wash, steam valves)
+#define FERM_UPDATE_SECS		300 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
+#define DEF_FERM_FLOW	 1000 // fermentation flow rate, based on 10L kegs and 10 day refills
+#define DEF_STEAM_FLOW 2.6  // max steam flow rate, arbitrarily taken from "tight" specs 	
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -60,7 +63,7 @@ uint8_t fet_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_V
 
 // op modes
 #define OP_MODE_NONE    		0 // no fermentation, wash and steam valves only
-#define OP_MODE_PREFILL 		1 // operate feed,ferm valves just to fill sep tank, no distilling
+#define OP_MODE_PREFILL 		1 // operate feed,ferm valves until fills sep tank, no distilling
 #define OP_MODE_SYNC  			2 // sync all valves for distilling
 #define OP_MODE_DELAY_SYNC	3 // as above, but delay sep fill until after distill done
 
@@ -100,10 +103,11 @@ const char* ntpServer = "pool.ntp.org";
 long  gmtOffset_sec;
 int   daylightOffset_sec;
 hw_timer_t *timer = NULL;
-uint8_t outpins[] = {STEAM_HEAT,HEADS_HEAT,STEAM_VALVE,WASH_VALVE,FEED_VALVE,FERM1_VALVE,FERM2_VALVE,XTRA_HEAT};
+uint8_t out_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_VALVE, XTRA_HEAT, STEAM_HEAT, HEADS_HEAT };
 int numberOfSensors;
 float volts_max, volts_now;
 float steam_ohms, heads_ohms;
+float ferm_flow, max_steam_flow;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, op_mode;
 uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
 uint16_t tank_levels[FLOW_COUNT][2];  // full/now pairs in millilitres
@@ -112,8 +116,10 @@ vtime timerOn = {0,0,false}, timerOff = {0,0,false};
 DeviceAddress sens_addrs[SENSOR_COUNT];
 float tempC[SENSOR_COUNT];
 uint8_t state_now = STATE_SLEEP;
-bool sensorUpdate = false;
-bool stateUpdate = false;
+bool doSensorUpdate = false;
+bool doStateUpdate = false;
+bool doFermUpdate = false;
+bool doFlowUpdate = false;
 bool bRunning = false;
 volatile uint32_t ticks;
 
@@ -126,16 +132,22 @@ AsyncWebServer server(80);
 void IRAM_ATTR ticker()
 {
   ticks++; // ticks are tenths of a second
-  if((ticks % (SENSOR_UPDATE_SECS*10))==0)
-    sensorUpdate = true;
-  if((ticks % (STATE_CYCLE_SECS*10))==0)
-    stateUpdate = true;
-	for(int i=0; i < FETS_COUNT; i++) {
-		if(on_fets[i] != 0) {
+  if((ticks % 10) == 0){
+		if((ticks % (SENSOR_UPDATE_SECS*10)) == 0)
+			doSensorUpdate = true;
+		if((ticks % (STATE_CYCLE_SECS*10)) == 0)
+			doStateUpdate = true;
+		if((ticks % (FLOW_UPDATE_SECS*10)) == 0)
+			doFlowUpdate = true;
+		if((ticks % (FERM_UPDATE_SECS*10)) == 0)
+			doFermUpdate = true;
+	}
+	for(int i=0; i < FETS_COUNT; i++){
+		if(on_fets[i] != 0){
 			if(--on_fets[i] == 0)
-				digitalWrite(fet_pins[i], LOW); // close FET
+				digitalWrite(out_pins[i], LOW); // close FET
 			else 
-				digitalWrite(fet_pins[i], HIGH); // open FET
+				digitalWrite(out_pins[i], HIGH); // open FET
 		}
 	}
 }
@@ -154,6 +166,14 @@ void stateUpdateCoolDn(void){
 
 void stateUpdateRun(void){
   DBG_DEBUG("State [RUN] update.");
+}
+
+void flowUpdate(void){
+  DBG_DEBUG("Flow update.");
+}
+
+void fermUpdate(void){
+  DBG_DEBUG("Ferm update.");
 }
 
 void sendJsonData(AsyncWebServerRequest *request){
@@ -211,8 +231,12 @@ void onSaveCfg(AsyncWebServerRequest *request){
 	if(request->hasParam("sR", true)){
 		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
 		heads_ohms = atof(request->getParam("hR", true)->value().c_str());
+		ferm_flow = atof(request->getParam("fR", true)->value().c_str());
+		max_steam_flow = atof(request->getParam("sF", true)->value().c_str());
 		nvs.putFloat("steamohms", steam_ohms);
 		nvs.putFloat("headsohms", heads_ohms);
+		nvs.putFloat("fermflow", ferm_flow);
+		nvs.putFloat("steamflow", max_steam_flow);
 		max_steam_duty = atoi(request->getParam("sD", true)->value().c_str())*((1<<PWM_WIDTH)-1)/100;
 		max_heads_duty = atoi(request->getParam("hD", true)->value().c_str())*((1<<PWM_WIDTH)-1)/100;
 		nvs.putUInt("maxsteam", max_steam_duty);
@@ -322,9 +346,9 @@ void setup() {
   
   // init GPIO pins
   pinMode(ONE_WIRE_BUS, INPUT);
-  for(int i = 0; i < sizeof(outpins); i++) {
-    pinMode(outpins[i], OUTPUT);
-    digitalWrite(outpins[i], LOW);
+  for(int i = 0; i < sizeof(out_pins); i++) {
+    pinMode(out_pins[i], OUTPUT);
+    digitalWrite(out_pins[i], LOW);
   }
   
   // initialize SPIFFS
@@ -332,6 +356,10 @@ void setup() {
     DBG_ERROR("Error while mounting SPIFFS");
     return;
   }
+  
+  // init op log
+  SpiffsFilePrint op_log("/oplog", 1, 4096, NULL);
+  op_log.printf("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
   
   // read wifi config if set, or use defaults
   nvs.begin("wifi", true);
@@ -408,6 +436,8 @@ void setup() {
   volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
+  ferm_flow = nvs.getFloat("fermflow", DEF_FERM_FLOW);
+  max_steam_flow = nvs.getFloat("steamflow", DEF_STEAM_FLOW);
   op_mode = nvs.getUInt("opmode", OP_MODE_NONE);
   max_steam_duty = nvs.getUInt("maxsteam", (1<<PWM_WIDTH)-1);
   max_heads_duty= nvs.getUInt("maxheads", (1<<PWM_WIDTH)-1);
@@ -470,17 +500,25 @@ void setup() {
 
 void loop() {
 
-  if(sensorUpdate){ 
+  if(doSensorUpdate){ 
     DBG_DEBUG("Reading sensors.");
     sensors.requestTemperatures();
     for(int i = 0; i < SENSOR_COUNT; i++)
       if(sens_addrs[i][7]) // // device family always non-zero when sensor exists
         tempC[i] = sensors.getTempC(sens_addrs[i]);
     volts_now = analogRead(VOLT_SENSOR)*volts_max/4095;
-    sensorUpdate = false;
+    doSensorUpdate = false;
   }
-	if(stateUpdate){ 
+	if(doStateUpdate){ 
     stateFuncs[state_now]();
-    stateUpdate = false;
+    doStateUpdate = false;
+	}
+	if(doFlowUpdate){ 
+    flowUpdate();
+    doFlowUpdate = false;
+	}
+	if(doFermUpdate){ 
+    fermUpdate();
+    doFermUpdate = false;
 	}
 }

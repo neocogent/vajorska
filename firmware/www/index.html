@@ -24,6 +24,7 @@
 			  <li class="nav-item"><a class="nav-link" href="#pg-manual" data-toggle="tab">Manual Control</a></li>
 			  <li class="nav-item"><a class="nav-link" href="#pg-settings" data-toggle="tab">Settings</a></li>
 			  <li class="nav-item"><a class="nav-link" href="#pg-calibrate" data-toggle="tab">Calibration</a></li>
+			  <li class="nav-item"><a class="nav-link" href="#pg-log" data-toggle="tab">Operation Log</a></li>
 			  <li class="nav-item"><a class="nav-link" href="#pg-about" data-toggle="tab">About</a></li>
 			</ul>
 		</div>
@@ -148,6 +149,16 @@
 					</select>
 				</div>
 				<div class="form-group input-group cfggrp">
+					<label for="sR">Fermentation Flow Rate </label>
+					<input type="text" class="form-control" id="fR" name="fR" placeholder="1000">
+					<div class="input-group-append"><span class="input-group-text"> ml/day </span></div>
+				</div>
+				<div class="form-group input-group cfggrp">
+					<label for="sR">Steam Max Flow Rate </label>
+					<input type="text" class="form-control" id="sF" name="sF" placeholder="1">
+					<div class="input-group-append"><span class="input-group-text"> ml/minute </span></div>
+				</div>
+				<div class="form-group input-group cfggrp">
 					<label for="sR">Steam Heater Resistance </label>
 					<input type="text" class="form-control" id="sR" name="sR" placeholder="10">
 					<div class="input-group-append"><span class="input-group-text"> ohms </span></div>
@@ -231,7 +242,9 @@
 				</div>
 				<div class="form-group input-group"></div>
 			</form>
-		</div>		
+		</div>	
+		<div id="pg-log" class="tab-pane log">
+		</div>
 		<div id="pg-about" class="tab-pane col-xs-9 cfg">
 			Vodak32 micro-Still <br>
 			(C) Copyright 2024 neocogent.<br>
