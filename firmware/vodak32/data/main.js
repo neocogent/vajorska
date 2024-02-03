@@ -120,6 +120,13 @@
 		$('#timerbtn').on('click', function() { $('#timerpane').removeClass('d-none');});
 		$('#timerpane button').on('click', function() { $('#timerpane').addClass('d-none');});
 		$('#timer').on('submit', postCfg );
+		
+		$("a[href='#pg-log']").on('show.bs.tab', function(e) {
+			$.get( '/oplog', {}, function(data) {
+				$('#pg-log').text(data);
+				});
+		});
+
 
 		Refresh();
     });

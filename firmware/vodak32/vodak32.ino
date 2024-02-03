@@ -3,7 +3,6 @@
 #include "ESPAsyncWebServer.h"
 #include <AsyncElegantOTA.h>
 #include "SPIFFS.h"
-#include <SpiffsFilePrint.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "AsyncJson.h"
@@ -98,6 +97,7 @@ typedef struct vtime {
 
 String ssid;
 String password;
+File op_log;
 
 const char* ntpServer = "pool.ntp.org";
 long  gmtOffset_sec;
@@ -358,8 +358,10 @@ void setup() {
   }
   
   // init op log
-  SpiffsFilePrint op_log("/oplog", 1, 4096, NULL);
+  DBG_INFO("Opening Op Log.");
+  op_log = SPIFFS.open("/oplog", "a");
   op_log.printf("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
+  op_log.close();
   
   // read wifi config if set, or use defaults
   nvs.begin("wifi", true);
