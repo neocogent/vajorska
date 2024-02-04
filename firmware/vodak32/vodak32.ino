@@ -201,7 +201,7 @@ void fermUpdate(void){
 	DBG_DEBUG("cycles %f, flow_cycle %f", cycles, flow_cycle);
 	
 	if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] < tank_levels[FLOW_WASH][TANK_LEVEL_FULL]){
-		flow_rates[FLOW_FERM2][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS;
+		flow_rates[FLOW_FERM2][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS + 0.5;
 		float flow_now = flow_rates[FLOW_FERM2][FLOW_RATE_LOW] + 
 			(flow_rates[FLOW_FERM2][FLOW_RATE_HIGH]-flow_rates[FLOW_FERM2][FLOW_RATE_LOW]) 
 		  * ((float)tank_levels[FLOW_FERM2][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM2][TANK_LEVEL_FULL]); // drops/min now
@@ -216,7 +216,7 @@ void fermUpdate(void){
 	} else flow_rates[FLOW_FERM2][FLOW_RATE_NOW] = 0;
 	
 	if(tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] < tank_levels[FLOW_FERM2][TANK_LEVEL_FULL]){
-		flow_rates[FLOW_FERM1][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS;
+		flow_rates[FLOW_FERM1][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS + 0.5;
 		float flow_now = flow_rates[FLOW_FERM1][FLOW_RATE_LOW] + 
 			(flow_rates[FLOW_FERM1][FLOW_RATE_HIGH]-flow_rates[FLOW_FERM1][FLOW_RATE_LOW]) 
 		  * ((float)tank_levels[FLOW_FERM1][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM1][TANK_LEVEL_FULL]); // drops/min now
@@ -229,7 +229,7 @@ void fermUpdate(void){
 	} else flow_rates[FLOW_FERM1][FLOW_RATE_NOW] = 0;
 	
 	if(tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] < tank_levels[FLOW_FERM1][TANK_LEVEL_FULL]){
-		flow_rates[FLOW_FEED][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS;
+		flow_rates[FLOW_FEED][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS + 0.5;
 		float flow_now = flow_rates[FLOW_FEED][FLOW_RATE_LOW] + 
 			(flow_rates[FLOW_FEED][FLOW_RATE_HIGH]-flow_rates[FLOW_FEED][FLOW_RATE_LOW]) 
 		  * ((float)tank_levels[FLOW_FEED][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FEED][TANK_LEVEL_FULL]); // drops/min now
@@ -259,7 +259,7 @@ void sendJsonData(AsyncWebServerRequest *request){
     data["run"] = bRunning;
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
-      flows.add(flow_rates[i][2]/2); // send tenths of ml per minute
+      flows.add(flow_rates[i][2]); // send drops per minute
     data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / ((1<<PWM_WIDTH)-1); // power depends on voltage and duty cycle, R const
     data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / ((1<<PWM_WIDTH)-1);
     if(request->hasParam("cfg")){ // send cfg data only when requested
@@ -600,6 +600,9 @@ void setup() {
   timerAlarmWrite(timer, 100000, true);
   timerAlarmEnable(timer);
   DBG_INFO("Ticker started.");
+  
+  // start ferm without long initial wait
+  doFermUpdate = true;
 }
 
 void loop() {
