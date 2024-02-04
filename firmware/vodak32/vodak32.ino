@@ -128,8 +128,8 @@ float volts_max, volts_now;
 float steam_ohms, heads_ohms;
 float ferm_flow, max_steam_flow;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, op_mode;
-uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute where 20 drops = 1ml
-uint16_t tank_levels[FLOW_COUNT][2];  // full/now pairs in millilitres
+uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute, 20 drops = 1ml
+uint16_t tank_levels[FLOW_COUNT][2];  // full/now pairs in drops
 uint16_t on_fets[FETS_COUNT]; // tick counts for FETS enabled (on)
 vtime timerOn = {0,0,false}, timerOff = {0,0,false};
 DeviceAddress sens_addrs[SENSOR_COUNT];
@@ -207,9 +207,9 @@ void fermUpdate(void){
 		  * ((float)tank_levels[FLOW_FERM2][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM2][TANK_LEVEL_FULL]); // drops/min now
 		on_fets[FETS_FERM2] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
 		DBG_DEBUG("FERM2 open %d tenths", on_fets[FETS_FERM2]);
-		tank_levels[FLOW_WASH][TANK_LEVEL_NOW] += flow_cycle / 20;
+		tank_levels[FLOW_WASH][TANK_LEVEL_NOW] += flow_cycle;
 		SaveTankLevel(FLOW_WASH, TANK_LEVEL_NOW);
-		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] -= flow_cycle / 20;
+		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] -= flow_cycle;
 		SaveTankLevel(FLOW_FERM2, TANK_LEVEL_NOW);
 		if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] >= tank_levels[FLOW_WASH][TANK_LEVEL_FULL])
 			OpLog("Wash tank full.");
@@ -222,9 +222,9 @@ void fermUpdate(void){
 		  * ((float)tank_levels[FLOW_FERM1][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM1][TANK_LEVEL_FULL]); // drops/min now
 		on_fets[FETS_FERM1] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
 		DBG_DEBUG("FERM1 open %d tenths", on_fets[FETS_FERM1]);
-		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] += flow_cycle / 20;
+		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] += flow_cycle;
 		SaveTankLevel(FLOW_FERM2, TANK_LEVEL_NOW);
-		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] -= flow_cycle / 20;
+		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] -= flow_cycle;
 		SaveTankLevel(FLOW_FERM1, TANK_LEVEL_NOW);
 	} else flow_rates[FLOW_FERM1][FLOW_RATE_NOW] = 0;
 	
@@ -235,9 +235,9 @@ void fermUpdate(void){
 		  * ((float)tank_levels[FLOW_FEED][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FEED][TANK_LEVEL_FULL]); // drops/min now
 		on_fets[FETS_FEED] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
 		DBG_DEBUG("FEED open %d tenths", on_fets[FETS_FEED]);
-		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] += flow_cycle / 20;
+		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] += flow_cycle;
 		SaveTankLevel(FLOW_FERM1, TANK_LEVEL_NOW);
-		tank_levels[FLOW_FEED][TANK_LEVEL_NOW] -= flow_cycle / 20;
+		tank_levels[FLOW_FEED][TANK_LEVEL_NOW] -= flow_cycle;
 		SaveTankLevel(FLOW_FEED, TANK_LEVEL_NOW);
 	} else flow_rates[FLOW_FEED][FLOW_RATE_NOW] = 0;
 	
@@ -276,11 +276,11 @@ void sendJsonData(AsyncWebServerRequest *request){
 				lowrates.add(flow_rates[i][1]/20);
 			JsonArray& tankfull = cfg.createNestedArray("tf");
 			for(int i=0; i < FLOW_COUNT; i++)
-				tankfull.add(tank_levels[i][0]);
+				tankfull.add(tank_levels[i][0]/20);
 			}
 		JsonArray& tanknow = data.createNestedArray("tn");
 		for(int i=0; i < FLOW_COUNT; i++)
-			tanknow.add(tank_levels[i][1]);
+			tanknow.add(tank_levels[i][1]/20);
 		data.printTo(*response);
 		request->send(response);
 }
@@ -339,7 +339,7 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		char key[] = "Txx";
 		uint8_t tank = atoi(request->getParam("tank", true)->value().c_str());
 		uint8_t level = atoi(request->getParam("level", true)->value().c_str());
-		tank_levels[tank][level] = atoi(request->getParam("volume", true)->value().c_str());
+		tank_levels[tank][level] = atoi(request->getParam("volume", true)->value().c_str())*20;
 		key[1] = 0x30 + tank;
 		key[2] = 0x30 + level;
 		nvs.putUInt(key, tank_levels[tank][level]);
