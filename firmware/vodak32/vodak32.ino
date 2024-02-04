@@ -241,7 +241,7 @@ void fermUpdate(void){
 		SaveTankLevel(FLOW_FEED, TANK_LEVEL_NOW);
 	} else flow_rates[FLOW_FEED][FLOW_RATE_NOW] = 0;
 	
-	if(tank_levels[FLOW_FEED][TANK_LEVEL_NOW] <= 0){
+	if(tank_levels[FLOW_FEED][TANK_LEVEL_NOW] < 0){
 		tank_levels[FLOW_FEED][TANK_LEVEL_NOW] = 0;
 		OpLog("Feed tank empty.");
 	}

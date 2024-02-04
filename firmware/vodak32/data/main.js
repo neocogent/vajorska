@@ -39,9 +39,9 @@
 		$('#tF .lcdvalue').text(data.temp[6]+' °C'); //only showing Ferm1 for now
 		$('#pS .lcdvalue').text(data.steam+' W');
 		$('#pH .lcdvalue').text(data.heads+' W');
-		$('#fS .lcdvalue').text(data.flows[0]/10+' M');
-		$('#fW .lcdvalue').text(data.flows[1]/10+' M');
-		$('#fF .lcdvalue').text(data.flows[3]/10+' M'); // only showing Ferm1 for now
+		$('#fS .lcdvalue').text(data.flows[0]/20+' M');
+		$('#fW .lcdvalue').text(data.flows[1]/20+' M');
+		$('#fF .lcdvalue').text(data.flows[3]/20+' M'); // only showing Ferm1 for now
 		tanklevels.pop();
 		tanklevels.push(data.tn);
 		$('#volume').val( tanklevels[ $('#level').find(":selected").val() ][ $('#tank').find(":selected").val() ] );
