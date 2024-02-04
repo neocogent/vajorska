@@ -259,7 +259,7 @@ void sendJsonData(AsyncWebServerRequest *request){
     data["run"] = bRunning;
     JsonArray& flows = data.createNestedArray("flows");
     for(int i=0; i < FLOW_COUNT; i++)
-      flows.add(flow_rates[i][2]/20);
+      flows.add(flow_rates[i][2]/2); // send tenths of ml per minute
     data["steam"] = volts_now * volts_now * duty_steam / steam_ohms / ((1<<PWM_WIDTH)-1); // power depends on voltage and duty cycle, R const
     data["heads"] = volts_now * volts_now * duty_heads / heads_ohms / ((1<<PWM_WIDTH)-1);
     if(request->hasParam("cfg")){ // send cfg data only when requested
