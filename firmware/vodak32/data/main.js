@@ -24,6 +24,9 @@
 			flowrates = [];
 			flowrates.push(data.cfg.hfr);
 			flowrates.push(data.cfg.lfr);
+			tanklevels = [];
+			tanklevels.push(data.cfg.tf);
+			tanklevels.push([]);
 			datareq = {};
 		}
 		// store op data in main screen readouts
@@ -39,6 +42,8 @@
 		$('#fS .lcdvalue').text(data.flows[0]+' M');
 		$('#fW .lcdvalue').text(data.flows[1]+' M');
 		$('#fF .lcdvalue').text(data.flows[3]+' M'); // only showing Ferm1 for now
+		tanklevels.pop();
+		tanklevels.push(data.tn);
 		
 		// add temps cfg dropdown with ids
 		var now = $("#tid").prop("selectedIndex");
@@ -51,6 +56,9 @@
 	}
 	function flowchg( e ) {
 		$('#flow').val( flowrates[ $('#rate').find(":selected").val() ][ $('#valve').find(":selected").val() ] );
+	}
+	function tankchg( e ) {
+		$('#volume').val( tanklevels[ $('#level').find(":selected").val() ][ $('#tank').find(":selected").val() ] );
 	}
 	
 	function postCfg( e ) {
@@ -117,6 +125,8 @@
 		$('#senset').on('click', senset );
 		$('#valve').on('change', flowchg );
 		$('#rate').on('change', flowchg );
+		$('#tank').on('change', tankchg );
+		$('#level').on('change', tankchg );
 		$('#timerbtn').on('click', function() { $('#timerpane').removeClass('d-none');});
 		$('#timerpane button').on('click', function() { $('#timerpane').addClass('d-none');});
 		$('#timer').on('submit', postCfg );

@@ -45,10 +45,12 @@
 #define SENSOR_COUNT 8 // number of onewire devices on bus
 #define FLOW_COUNT   5 // number of valves
 #define FETS_COUNT	 6 // number of FET switches - 5 are valves, 1 extra (indexing first 6 outpins)
+#define SECS_FULL_DAY				864 // seconds in a 24 hr day
+#define SECS_PART_DAY				64800 // seconds in a 18 hr day (excludes max solar/distill time)
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
 #define FLOW_UPDATE_SECS		5  // interval for still flow cycle (secs)(wash, steam valves)
-#define FERM_UPDATE_SECS		300 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
+#define FERM_UPDATE_SECS		6 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
@@ -67,11 +69,15 @@
 #define OP_MODE_SYNC  			2 // sync all valves for distilling
 #define OP_MODE_DELAY_SYNC	3 // as above, but delay sep fill until after distill done
 
+String op_modes_msg[] = { "None", "Prefill", "Sync", "Delayed Sync" };
+
 // the machine states
 #define STATE_SLEEP 	0
 #define STATE_HEAT_UP 1
 #define STATE_COOL_DN 2
 #define STATE_RUN 		3
+
+String states_msg[] = { "Sleep", "Heat Up", "Cool Down", "Run" };
 
 // the temp sensor row ids
 #define TEMP_HEADS  0
@@ -89,6 +95,19 @@
 #define FLOW_FEED		2
 #define FLOW_FERM1	3
 #define FLOW_FERM2	4
+#define FLOW_RATE_HIGH	0
+#define FLOW_RATE_LOW		1
+#define FLOW_RATE_NOW 	2
+#define TANK_LEVEL_FULL 0
+#define TANK_LEVEL_NOW  1
+
+// on_fets indices
+#define FETS_FEED		0
+#define FETS_FERM1	1
+#define FETS_FERM2	2
+#define FETS_WASH		3
+#define FETS_STEAM	4
+#define FETS_XTRA		5
 
 typedef struct vtime {
   uint8_t mins;
@@ -173,7 +192,57 @@ void flowUpdate(void){
 }
 
 void fermUpdate(void){
-  DBG_DEBUG("Ferm update.");
+	DBG_DEBUG("Ferm update.");
+	if((op_mode == OP_MODE_NONE) || ((op_mode == OP_MODE_DELAY_SYNC) && (state_now != STATE_SLEEP)))
+		return;
+		
+	float cycles = ((op_mode == OP_MODE_DELAY_SYNC) ? SECS_PART_DAY : SECS_FULL_DAY) / FERM_UPDATE_SECS;
+	float flow_cycle = ferm_flow*20 / cycles; // drops per ferm cycle
+	DBG_DEBUG("cycles %f, flow_cycle %f", cycles, flow_cycle);
+	
+	if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] < tank_levels[FLOW_WASH][TANK_LEVEL_FULL]){
+		flow_rates[FLOW_FERM2][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS;
+		float flow_now = flow_rates[FLOW_FERM2][FLOW_RATE_LOW] + 
+			(flow_rates[FLOW_FERM2][FLOW_RATE_HIGH]-flow_rates[FLOW_FERM2][FLOW_RATE_LOW]) 
+		  * ((float)tank_levels[FLOW_FERM2][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM2][TANK_LEVEL_FULL]); // drops/min now
+		on_fets[FETS_FERM2] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
+		DBG_DEBUG("FERM2 open %d tenths", on_fets[FETS_FERM2]);
+		tank_levels[FLOW_WASH][TANK_LEVEL_NOW] += flow_cycle / 20;
+		SaveTankLevel(FLOW_WASH, TANK_LEVEL_NOW);
+		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] -= flow_cycle / 20;
+		SaveTankLevel(FLOW_FERM2, TANK_LEVEL_NOW);
+		if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] >= tank_levels[FLOW_WASH][TANK_LEVEL_FULL])
+			OpLog("Wash tank full.");
+	} else flow_rates[FLOW_FERM2][FLOW_RATE_NOW] = 0;
+	
+	if(tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] < tank_levels[FLOW_FERM2][TANK_LEVEL_FULL]){
+		flow_rates[FLOW_FERM1][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS;
+		float flow_now = flow_rates[FLOW_FERM1][FLOW_RATE_LOW] + 
+			(flow_rates[FLOW_FERM1][FLOW_RATE_HIGH]-flow_rates[FLOW_FERM1][FLOW_RATE_LOW]) 
+		  * ((float)tank_levels[FLOW_FERM1][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM1][TANK_LEVEL_FULL]); // drops/min now
+		on_fets[FETS_FERM1] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
+		DBG_DEBUG("FERM1 open %d tenths", on_fets[FETS_FERM1]);
+		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] += flow_cycle / 20;
+		SaveTankLevel(FLOW_FERM2, TANK_LEVEL_NOW);
+		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] -= flow_cycle / 20;
+		SaveTankLevel(FLOW_FERM1, TANK_LEVEL_NOW);
+	} else flow_rates[FLOW_FERM1][FLOW_RATE_NOW] = 0;
+	
+	if(tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] < tank_levels[FLOW_FERM1][TANK_LEVEL_FULL]){
+		flow_rates[FLOW_FEED][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS;
+		float flow_now = flow_rates[FLOW_FEED][FLOW_RATE_LOW] + 
+			(flow_rates[FLOW_FEED][FLOW_RATE_HIGH]-flow_rates[FLOW_FEED][FLOW_RATE_LOW]) 
+		  * ((float)tank_levels[FLOW_FEED][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FEED][TANK_LEVEL_FULL]); // drops/min now
+		on_fets[FETS_FEED] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
+		DBG_DEBUG("FEED open %d tenths", on_fets[FETS_FEED]);
+		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] += flow_cycle / 20;
+		SaveTankLevel(FLOW_FERM1, TANK_LEVEL_NOW);
+		tank_levels[FLOW_FEED][TANK_LEVEL_NOW] -= flow_cycle / 20;
+		SaveTankLevel(FLOW_FEED, TANK_LEVEL_NOW);
+	} else flow_rates[FLOW_FEED][FLOW_RATE_NOW] = 0;
+	
+	if(tank_levels[FLOW_FEED][TANK_LEVEL_NOW] <= 0)
+		OpLog("Feed tank empty.");
 }
 
 void sendJsonData(AsyncWebServerRequest *request){
@@ -205,7 +274,13 @@ void sendJsonData(AsyncWebServerRequest *request){
 			JsonArray& lowrates = cfg.createNestedArray("lfr");
 			for(int i=0; i < FLOW_COUNT; i++)
 				lowrates.add(flow_rates[i][1]/20);
+			JsonArray& tankfull = cfg.createNestedArray("tf");
+			for(int i=0; i < FLOW_COUNT; i++)
+				tankfull.add(tank_levels[i][0]);
 			}
+		JsonArray& tanknow = data.createNestedArray("tn");
+		for(int i=0; i < FLOW_COUNT; i++)
+			tanknow.add(tank_levels[i][1]);
 		data.printTo(*response);
 		request->send(response);
 }
@@ -225,8 +300,10 @@ void onSaveCfg(AsyncWebServerRequest *request){
 	nvs.begin("config");
 	if(request->hasParam("opmode", true)){
 		op_mode = atoi(request->getParam("opmode", true)->value().c_str());
+		if(op_mode == OP_MODE_NONE)
+			flow_rates[FLOW_FERM1][2] = 0;
 		nvs.putUInt("opmode", op_mode);
-		DBG_INFO("Op mode set to %1d", op_mode);
+		OpLog("Op mode: %s.", op_modes_msg[op_mode]);
 	}
 	if(request->hasParam("sR", true)){
 		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
@@ -312,7 +389,7 @@ void onSaveCfg(AsyncWebServerRequest *request){
 void onRunChg(AsyncWebServerRequest *request){
   if(request->hasParam("on", true)){
     bRunning = request->getParam("on", true)->value() == "true";
-    DBG_INFO("Run state: %s.", bRunning ? "ON" : "OFF");
+    OpLog("Run state: %s.", bRunning ? "ON" : "OFF");
 	}
 	if(request->hasParam("open", true)){
 		uint8_t valve = atoi(request->getParam("open", true)->value().c_str());
@@ -337,6 +414,15 @@ void onReset(AsyncWebServerRequest *request){
 	}
 }
 
+void SaveTankLevel(uint8_t tank, uint8_t level){
+	nvs.begin("config");
+	char key[] = "Txx";
+	key[1] = 0x30 + tank;
+	key[2] = 0x30 + level;
+	nvs.putUInt(key, tank_levels[tank][level]);
+	nvs.end();
+}
+
 void OpLog(const char *fmt, ...){
 	struct tm timeinfo;
 	char buf[128];
@@ -344,12 +430,11 @@ void OpLog(const char *fmt, ...){
 	size_t n = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S ", &timeinfo);
 	
 	File file = SPIFFS.open("/oplog", "a");
-	//file.print(buf);
   va_list args;
 	va_start(args, fmt);
   vsnprintf(buf+n, sizeof(buf)-n, fmt, args);
   va_end(args);
-  file.print(buf);
+  file.println(buf);
   file.close();
 }
 
@@ -488,7 +573,7 @@ void setup() {
 	// init op log
   SPIFFS.remove("/oplog.old");
 	SPIFFS.rename("/oplog", "/oplog.old");
-  OpLog("vodak32 - version %d.%d.%d\n", VER_MAJOR, VER_MINOR, VER_PATCH);
+  OpLog("vodak32 - version %d.%d.%d", VER_MAJOR, VER_MINOR, VER_PATCH);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
