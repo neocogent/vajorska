@@ -44,6 +44,7 @@
 		$('#fF .lcdvalue').text(data.flows[3]+' M'); // only showing Ferm1 for now
 		tanklevels.pop();
 		tanklevels.push(data.tn);
+		$('#volume').val( tanklevels[ $('#level').find(":selected").val() ][ $('#tank').find(":selected").val() ] );
 		
 		// add temps cfg dropdown with ids
 		var now = $("#tid").prop("selectedIndex");
