@@ -188,7 +188,33 @@ void stateUpdateRun(void){
 }
 
 void flowUpdate(void){
-  DBG_DEBUG("Flow update.");
+	DBG_DEBUG("Flow update.");
+	if((op_mode == OP_MODE_SYNC) || (op_mode == OP_MODE_DELAY_SYNC)){
+		if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] > 0){
+			float flow_cycle = flow_rates[FLOW_WASH][FLOW_RATE_NOW] * FLOW_UPDATE_SECS / 60; // drops this cycle
+			float flow_now = flow_rates[FLOW_WASH][FLOW_RATE_LOW] + 
+				(flow_rates[FLOW_WASH][FLOW_RATE_HIGH]-flow_rates[FLOW_WASH][FLOW_RATE_LOW]) 
+				* ((float)tank_levels[FLOW_WASH][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_WASH][TANK_LEVEL_FULL]); // drops/min now
+			on_fets[FETS_WASH] = flow_cycle * 600 / flow_now + 0.5; // tenths to open valve
+			DBG_DEBUG("WASH open %d tenths, flow_now %.0f drops/min", on_fets[FETS_WASH], flow_now);
+			tank_levels[FLOW_WASH][TANK_LEVEL_NOW] -= flow_cycle;
+			SaveTankLevel(FLOW_WASH, TANK_LEVEL_NOW);
+			if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] <= 0)
+				OpLog("Wash tank empty.");
+		}
+	if(tank_levels[FLOW_STEAM][TANK_LEVEL_NOW] > 0){
+			float flow_cycle = flow_rates[FLOW_STEAM][FLOW_RATE_NOW] * FLOW_UPDATE_SECS / 60; // drops this cycle
+			float flow_now = flow_rates[FLOW_STEAM][FLOW_RATE_LOW] + 
+				(flow_rates[FLOW_STEAM][FLOW_RATE_HIGH]-flow_rates[FLOW_STEAM][FLOW_RATE_LOW]) 
+				* ((float)tank_levels[FLOW_STEAM][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_STEAM][TANK_LEVEL_FULL]); // drops/min now
+			on_fets[FETS_STEAM] = flow_cycle * 600 / flow_now + 0.5; // tenths to open valve
+			DBG_DEBUG("STEAM open %d tenths, flow_now %.0f drops/min", on_fets[FLOW_STEAM], flow_now);
+			tank_levels[FLOW_STEAM][TANK_LEVEL_NOW] -= flow_cycle;
+			SaveTankLevel(FLOW_STEAM, TANK_LEVEL_NOW);
+			if(tank_levels[FLOW_STEAM][TANK_LEVEL_NOW] <= 0)
+				OpLog("Water tank empty.");
+		}
+	}
 }
 
 void fermUpdate(void){
@@ -198,7 +224,7 @@ void fermUpdate(void){
 		
 	float cycles = ((op_mode == OP_MODE_DELAY_SYNC) ? SECS_PART_DAY : SECS_FULL_DAY) / FERM_UPDATE_SECS; // ferm cycles per day
 	float flow_cycle = ferm_flow*20 / cycles; // drops per ferm cycle
-	DBG_DEBUG("cycles %f, flow_cycle %f", cycles, flow_cycle);
+	DBG_DEBUG("cycles %.0f, flow_cycle %.0f", cycles, flow_cycle);
 	
 	if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] < tank_levels[FLOW_WASH][TANK_LEVEL_FULL]){
 		flow_rates[FLOW_FERM2][FLOW_RATE_NOW] = flow_cycle*60/FERM_UPDATE_SECS + 0.5;
