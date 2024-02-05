@@ -49,7 +49,7 @@
 #define SECS_PART_DAY				64800 // seconds in a 18 hr day (excludes max solar/distill time)
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
-#define FLOW_UPDATE_SECS		5  // interval for still flow cycle (secs)(wash, steam valves)
+#define FLOW_UPDATE_SECS		10 // interval for still flow cycle (secs)(wash, steam valves)
 #define FERM_UPDATE_SECS		900 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
@@ -205,8 +205,8 @@ void fermUpdate(void){
 		float flow_now = flow_rates[FLOW_FERM2][FLOW_RATE_LOW] + 
 			(flow_rates[FLOW_FERM2][FLOW_RATE_HIGH]-flow_rates[FLOW_FERM2][FLOW_RATE_LOW]) 
 		  * ((float)tank_levels[FLOW_FERM2][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM2][TANK_LEVEL_FULL]); // drops/min now
-		on_fets[FETS_FERM2] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
-		DBG_DEBUG("FERM2 open %d tenths", on_fets[FETS_FERM2]);
+		on_fets[FETS_FERM2] = flow_cycle * 600 / flow_now + 0.5; // tenths to open valve
+		DBG_DEBUG("FERM2 open %d tenths, flow_now %.0f drops/min", on_fets[FETS_FERM2], flow_now);
 		tank_levels[FLOW_WASH][TANK_LEVEL_NOW] += flow_cycle;
 		SaveTankLevel(FLOW_WASH, TANK_LEVEL_NOW);
 		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] -= flow_cycle;
@@ -220,8 +220,8 @@ void fermUpdate(void){
 		float flow_now = flow_rates[FLOW_FERM1][FLOW_RATE_LOW] + 
 			(flow_rates[FLOW_FERM1][FLOW_RATE_HIGH]-flow_rates[FLOW_FERM1][FLOW_RATE_LOW]) 
 		  * ((float)tank_levels[FLOW_FERM1][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FERM1][TANK_LEVEL_FULL]); // drops/min now
-		on_fets[FETS_FERM1] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
-		DBG_DEBUG("FERM1 open %d tenths", on_fets[FETS_FERM1]);
+		on_fets[FETS_FERM1] = flow_cycle * 600 / flow_now + 0.5; // tenths to open valve
+		DBG_DEBUG("FERM1 open %d tenths, flow_now %.0f drops/min", on_fets[FETS_FERM1], flow_now);
 		tank_levels[FLOW_FERM2][TANK_LEVEL_NOW] += flow_cycle;
 		SaveTankLevel(FLOW_FERM2, TANK_LEVEL_NOW);
 		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] -= flow_cycle;
@@ -233,8 +233,8 @@ void fermUpdate(void){
 		float flow_now = flow_rates[FLOW_FEED][FLOW_RATE_LOW] + 
 			(flow_rates[FLOW_FEED][FLOW_RATE_HIGH]-flow_rates[FLOW_FEED][FLOW_RATE_LOW]) 
 		  * ((float)tank_levels[FLOW_FEED][TANK_LEVEL_NOW]/(float)tank_levels[FLOW_FEED][TANK_LEVEL_FULL]); // drops/min now
-		on_fets[FETS_FEED] = flow_cycle * 6 / flow_now + 0.5; // tenths to open valve
-		DBG_DEBUG("FEED open %d tenths", on_fets[FETS_FEED]);
+		on_fets[FETS_FEED] = flow_cycle * 600 / flow_now + 0.5; // tenths to open valve
+		DBG_DEBUG("FEED open %d tenths, flow_now %.0f drops/min", on_fets[FETS_FEED], flow_now);
 		tank_levels[FLOW_FERM1][TANK_LEVEL_NOW] += flow_cycle;
 		SaveTankLevel(FLOW_FERM1, TANK_LEVEL_NOW);
 		tank_levels[FLOW_FEED][TANK_LEVEL_NOW] -= flow_cycle;
