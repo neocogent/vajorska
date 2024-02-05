@@ -17,6 +17,8 @@
 		if(data.cfg != undefined) {
 			$('#ssid').val(data.cfg.ssid);
 			$('#pwd').val(data.cfg.pwd);
+			$('#mS').val(data.cfg.mS);
+			$('#mF').val(data.cfg.mF);
 			$('#fR').val(data.cfg.fR);
 			$('#sR').val(data.cfg.sR);
 			$('#sD').val(data.cfg.sD);

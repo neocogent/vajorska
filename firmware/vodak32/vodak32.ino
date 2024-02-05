@@ -64,13 +64,20 @@
 #define PWM_WIDTH					8   // pwm bits
 #define PWM_HZ						100 // pwm frequency
 
-// op modes
-#define OP_MODE_NONE    		0 // no fermentation, wash and steam valves only
-#define OP_MODE_PREFILL 		1 // operate feed,ferm valves until fills sep tank, no distilling
-#define OP_MODE_SYNC  			2 // sync all valves for distilling
-#define OP_MODE_DELAY_SYNC	3 // as above, but delay sep fill until after distill done
+// ferm modes
+#define FERM_MODE_NONE    		0 // no fermentation, feed, ferm1 and ferm2 valves off
+#define FERM_MODE_PREFILL 		1 // operate feed,ferm valves until fills sep tank, no distilling
+#define FERM_MODE_SYNC  			2 // sync all valves for distilling
+#define FERM_MODE_DELAY_SYNC	3 // as above, but delay sep fill until after distill done
 
-String op_modes_msg[] = { "None", "Prefill", "Sync", "Delayed Sync" };
+String ferm_modes_msg[] = { "None", "Prefill", "Sync", "Delayed Sync" };
+
+// still modes
+#define STILL_MODE_NONE    		0 // no distilling, wash and steam valves off
+#define STILL_MODE_SOLAR	 		1 // distill between 8am-4pm, voltage threshold starts
+#define STILL_MODE_MANUAL			2 // distill when run is ON, or timer enabled
+
+String still_modes_msg[] = { "None", "Solar", "Manual" };
 
 // the machine states
 #define STATE_SLEEP 	0
@@ -130,7 +137,7 @@ int numberOfSensors;
 float volts_max, volts_now, volts_run;
 float steam_ohms, heads_ohms;
 float ferm_flow, max_steam_flow;
-uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, op_mode;
+uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, still_mode, ferm_mode;
 uint16_t flow_rates[FLOW_COUNT][3];  // high/low/now triplets in drops per minute, 20 drops = 1ml
 int32_t tank_levels[FLOW_COUNT][2];  // full/now pairs in drops
 uint16_t on_fets[FETS_COUNT]; // tick counts for FETS enabled (on)
@@ -192,7 +199,7 @@ void stateUpdateRun(void){
 
 void flowUpdate(void){
 	DBG_DEBUG("Flow update.");
-	if((op_mode == OP_MODE_SYNC) || (op_mode == OP_MODE_DELAY_SYNC)){
+	if((ferm_mode == FERM_MODE_SYNC) || (ferm_mode == FERM_MODE_DELAY_SYNC)){
 		if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] > 0){
 			float flow_cycle = flow_rates[FLOW_WASH][FLOW_RATE_NOW] * FLOW_UPDATE_SECS / 60; // drops this cycle
 			float flow_now = flow_rates[FLOW_WASH][FLOW_RATE_LOW] + 
@@ -222,10 +229,10 @@ void flowUpdate(void){
 
 void fermUpdate(void){
 	DBG_DEBUG("Ferm update.");
-	if((op_mode == OP_MODE_NONE) || ((op_mode == OP_MODE_DELAY_SYNC) && (state_now != STATE_SLEEP)))
+	if((ferm_mode == FERM_MODE_NONE) || ((ferm_mode == FERM_MODE_DELAY_SYNC) && (state_now != STATE_SLEEP)))
 		return;
 		
-	float cycles = ((op_mode == OP_MODE_DELAY_SYNC) ? SECS_PART_DAY : SECS_FULL_DAY) / FERM_UPDATE_SECS; // ferm cycles per day
+	float cycles = ((ferm_mode == FERM_MODE_DELAY_SYNC) ? SECS_PART_DAY : SECS_FULL_DAY) / FERM_UPDATE_SECS; // ferm cycles per day
 	float flow_cycle = ferm_flow*20 / cycles; // drops per ferm cycle
 	DBG_DEBUG("cycles %.0f, flow_cycle %.0f", cycles, flow_cycle);
 	
@@ -295,6 +302,8 @@ void sendJsonData(AsyncWebServerRequest *request){
       JsonObject& cfg = data.createNestedObject("cfg"); 
 			cfg["ssid"] = ssid;
 			cfg["pwd"] = password;
+			cfg["mS"] = still_mode;
+			cfg["mF"] = ferm_mode;
 			cfg["fR"] = ferm_flow;
 			cfg["sR"] = steam_ohms;
 			cfg["sD"] = max_steam_duty*100/((1<<PWM_WIDTH)-1);
@@ -331,12 +340,21 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		return;
 	}
 	nvs.begin("config");
-	if(request->hasParam("opmode", true)){
-		op_mode = atoi(request->getParam("opmode", true)->value().c_str());
-		if(op_mode == OP_MODE_NONE)
+	if(request->hasParam("mS", true)){
+		still_mode = atoi(request->getParam("mS", true)->value().c_str());
+		if(still_mode == STILL_MODE_NONE){
+			flow_rates[FLOW_WASH][2] = 0;
+			flow_rates[FLOW_STEAM][2] = 0;
+		}
+		nvs.putUInt("stillmode", still_mode);
+		OpLog("Still mode: %s.", still_modes_msg[still_mode]);
+	}
+	if(request->hasParam("mF", true)){
+		ferm_mode = atoi(request->getParam("mF", true)->value().c_str());
+		if(ferm_mode == FERM_MODE_NONE)
 			flow_rates[FLOW_FERM1][2] = 0;
-		nvs.putUInt("opmode", op_mode);
-		OpLog("Op mode: %s.", op_modes_msg[op_mode]);
+		nvs.putUInt("fermmode", ferm_mode);
+		OpLog("Ferm mode: %s.", ferm_modes_msg[ferm_mode]);
 	}
 	if(request->hasParam("sR", true)){
 		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
@@ -571,7 +589,8 @@ void setup() {
   ferm_flow = nvs.getFloat("fermflow", DEF_FERM_FLOW);
   volts_run = nvs.getFloat("voltsrun", DEF_VOLTS_RUN);
   max_steam_flow = nvs.getFloat("steamflow", DEF_STEAM_FLOW);
-  op_mode = nvs.getUInt("opmode", OP_MODE_NONE);
+  ferm_mode = nvs.getUInt("fermmode", FERM_MODE_NONE);
+  still_mode = nvs.getUInt("stillmode", STILL_MODE_NONE);
   max_steam_duty = nvs.getUInt("maxsteam", (1<<PWM_WIDTH)-1);
   max_heads_duty= nvs.getUInt("maxheads", (1<<PWM_WIDTH)-1);
   gmtOffset_sec = nvs.getInt("gmtoffset", DEF_TIMEZONE);
@@ -610,6 +629,7 @@ void setup() {
   SPIFFS.remove("/oplog.old");
 	SPIFFS.rename("/oplog", "/oplog.old");
   OpLog("Vodak32 - version %d.%d.%d", VER_MAJOR, VER_MINOR, VER_PATCH);
+  OpLog("Still mode: %s, Ferm mode: %s.", still_modes_msg[still_mode], ferm_modes_msg[ferm_mode]);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
