@@ -17,10 +17,12 @@
 		if(data.cfg != undefined) {
 			$('#ssid').val(data.cfg.ssid);
 			$('#pwd').val(data.cfg.pwd);
+			$('#fR').val(data.cfg.fR);
 			$('#sR').val(data.cfg.sR);
 			$('#sD').val(data.cfg.sD);
 			$('#hR').val(data.cfg.hR);
 			$('#hD').val(data.cfg.hD);
+			$('#vR').val(data.cfg.vR);
 			flowrates = [];
 			flowrates.push(data.cfg.hfr);
 			flowrates.push(data.cfg.lfr);

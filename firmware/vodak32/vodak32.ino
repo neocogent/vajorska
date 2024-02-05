@@ -56,7 +56,7 @@
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
 #define DEF_FERM_FLOW	 1000 // fermentation flow rate, based on 10L kegs and 10 day refills
 #define DEF_STEAM_FLOW 2.6  // max steam flow rate, arbitrarily taken from "tight" specs 	
-#define DEF_VOLTS_RUN  42 // solar voltage to run distill, wake from sleep
+#define DEF_VOLTS_RUN  42   // solar voltage to run distill, wake from sleep
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -110,7 +110,7 @@ String states_msg[] = { "Sleep", "Heat Up", "Cool Down", "Run" };
 #define FETS_STEAM	4
 #define FETS_XTRA		5
 
-String valves_msg = { "Feed", "Ferm1", "Ferm2", "Wash", "Steam" };
+String valves_msg[] = { "Feed", "Ferm1", "Ferm2", "Wash", "Steam", "Xtra" };
 
 typedef struct vtime {
   uint8_t mins;
@@ -295,7 +295,7 @@ void sendJsonData(AsyncWebServerRequest *request){
       JsonObject& cfg = data.createNestedObject("cfg"); 
 			cfg["ssid"] = ssid;
 			cfg["pwd"] = password;
-			cfg['fR'] = ferm_flow;
+			cfg["fR"] = ferm_flow;
 			cfg["sR"] = steam_ohms;
 			cfg["sD"] = max_steam_duty*100/((1<<PWM_WIDTH)-1);
 			cfg["hR"] = heads_ohms;
