@@ -109,6 +109,8 @@ String states_msg[] = { "Sleep", "Heat Up", "Cool Down", "Run" };
 #define FETS_STEAM	4
 #define FETS_XTRA		5
 
+String valves_msg = { "Feed", "Ferm1", "Ferm2", "Wash", "Steam" };
+
 typedef struct vtime {
   uint8_t mins;
   uint8_t hrs;
@@ -425,7 +427,7 @@ void onRunChg(AsyncWebServerRequest *request){
 		if(tenths == 0)
 			tenths = 10;
 		on_fets[valve-1] = tenths+1; // will open valve on next tick, with count down to close
-		DBG_INFO("Open valve %d for %d tenths.", valve, tenths);
+		DBG_INFO("Open valve %s for %d tenths.", valves_msg[valve-1], tenths);
 	}
 	request->send(200);
 }
@@ -466,7 +468,7 @@ void OpLog(const char *fmt, ...){
   file.close();
 }
 
-void (*(stateFuncs[]))() = {stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun};
+void (*(stateFuncs[]))() = { stateUpdateSleep, stateUpdateHeatUp, stateUpdateCoolDn, stateUpdateRun };
 
 void setup() {
   // serial for log / debug output
@@ -601,7 +603,7 @@ void setup() {
 	// init op log
   SPIFFS.remove("/oplog.old");
 	SPIFFS.rename("/oplog", "/oplog.old");
-  OpLog("vodak32 - version %d.%d.%d", VER_MAJOR, VER_MINOR, VER_PATCH);
+  OpLog("Vodak32 - version %d.%d.%d", VER_MAJOR, VER_MINOR, VER_PATCH);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
@@ -610,6 +612,7 @@ void setup() {
   server.on("/run", HTTP_POST, [](AsyncWebServerRequest *request){ onRunChg(request); });
   server.on("/reset", HTTP_GET, [](AsyncWebServerRequest *request){ onReset(request); });
 
+	// start web app server
   AsyncElegantOTA.begin(&server);
   server.begin();
   
@@ -620,7 +623,7 @@ void setup() {
   ledcSetup(HEADS_PWM_CHANNEL, PWM_HZ, PWM_WIDTH);
   ledcAttachPin(HEADS_HEAT, HEADS_PWM_CHANNEL);
   
-  // setup tick timer for sensor reads and state machine
+  // setup tick timer for sensor reads, valve timing and state machine
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &ticker, true);
   timerAlarmWrite(timer, 100000, true);
