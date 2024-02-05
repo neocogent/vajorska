@@ -56,6 +56,7 @@
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
 #define DEF_FERM_FLOW	 1000 // fermentation flow rate, based on 10L kegs and 10 day refills
 #define DEF_STEAM_FLOW 2.6  // max steam flow rate, arbitrarily taken from "tight" specs 	
+#define DEF_VOLTS_RUN  42 // solar voltage to run distill, wake from sleep
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -126,7 +127,7 @@ int   daylightOffset_sec;
 hw_timer_t *timer = NULL;
 uint8_t out_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_VALVE, XTRA_HEAT, STEAM_HEAT, HEADS_HEAT };
 int numberOfSensors;
-float volts_max, volts_now;
+float volts_max, volts_now, volts_run;
 float steam_ohms, heads_ohms;
 float ferm_flow, max_steam_flow;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, op_mode;
@@ -294,10 +295,12 @@ void sendJsonData(AsyncWebServerRequest *request){
       JsonObject& cfg = data.createNestedObject("cfg"); 
 			cfg["ssid"] = ssid;
 			cfg["pwd"] = password;
+			cfg['fR'] = ferm_flow;
 			cfg["sR"] = steam_ohms;
 			cfg["sD"] = max_steam_duty*100/((1<<PWM_WIDTH)-1);
 			cfg["hR"] = heads_ohms;
 			cfg["hD"] = max_heads_duty*100/((1<<PWM_WIDTH)-1);
+			cfg["vR"] = volts_run;
 			JsonArray& highrates = cfg.createNestedArray("hfr");
 			for(int i=0; i < FLOW_COUNT; i++)
 				highrates.add(flow_rates[i][0]/20);
@@ -339,11 +342,13 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		steam_ohms = atof(request->getParam("sR", true)->value().c_str());
 		heads_ohms = atof(request->getParam("hR", true)->value().c_str());
 		ferm_flow = atof(request->getParam("fR", true)->value().c_str());
+		volts_run = atof(request->getParam("vR", true)->value().c_str());
 		max_steam_flow = atof(request->getParam("sF", true)->value().c_str());
 		nvs.putFloat("steamohms", steam_ohms);
 		nvs.putFloat("headsohms", heads_ohms);
 		nvs.putFloat("fermflow", ferm_flow);
 		nvs.putFloat("steamflow", max_steam_flow);
+		nvs.putFloat("voltsrun", volts_run);
 		max_steam_duty = atoi(request->getParam("sD", true)->value().c_str())*((1<<PWM_WIDTH)-1)/100;
 		max_heads_duty = atoi(request->getParam("hD", true)->value().c_str())*((1<<PWM_WIDTH)-1)/100;
 		nvs.putUInt("maxsteam", max_steam_duty);
@@ -564,6 +569,7 @@ void setup() {
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
   ferm_flow = nvs.getFloat("fermflow", DEF_FERM_FLOW);
+  volts_run = nvs.getFloat("voltsrun", DEF_VOLTS_RUN);
   max_steam_flow = nvs.getFloat("steamflow", DEF_STEAM_FLOW);
   op_mode = nvs.getUInt("opmode", OP_MODE_NONE);
   max_steam_duty = nvs.getUInt("maxsteam", (1<<PWM_WIDTH)-1);
