@@ -199,7 +199,7 @@ void stateUpdateRun(void){
 
 void flowUpdate(void){
 	DBG_DEBUG("Flow update.");
-	if((ferm_mode == FERM_MODE_SYNC) || (ferm_mode == FERM_MODE_DELAY_SYNC)){
+	if(still_mode != STILL_MODE_NONE){
 		if(tank_levels[FLOW_WASH][TANK_LEVEL_NOW] > 0){
 			float flow_cycle = flow_rates[FLOW_WASH][FLOW_RATE_NOW] * FLOW_UPDATE_SECS / 60; // drops this cycle
 			float flow_now = flow_rates[FLOW_WASH][FLOW_RATE_LOW] + 
@@ -465,6 +465,7 @@ void onReset(AsyncWebServerRequest *request){
 		nvs.end();
 		DBG_INFO("Sensors reset.");
 	}
+	request->send(200);
 }
 
 void SaveTankLevel(uint8_t tank, uint8_t level){
@@ -666,8 +667,10 @@ void loop() {
     DBG_DEBUG("Reading sensors.");
     sensors.requestTemperatures();
     for(int i = 0; i < SENSOR_COUNT; i++)
-      if(sens_addrs[i][7]) // // device family always non-zero when sensor exists
+      if(sens_addrs[i][7]){ // // device family always non-zero when sensor exists
         tempC[i] = sensors.getTempC(sens_addrs[i]);
+        DBG_DEBUG("Temp %d - %.1f", i, tempC[i]);
+			}
     volts_now = analogRead(VOLT_SENSOR)*volts_max/4095;
     doSensorUpdate = false;
   }

@@ -140,8 +140,16 @@
 		<div id="pg-settings" class="tab-pane col-xs-9 cfg">
 			<form class="update" id="settings">
 				<div class="form-group input-group smallgrp">
-					<label for="valve">Fermentation Mode</label>
-					<select class="form-control" name="opmode">
+					<label for="valve">Distilling Mode</label>
+					<select class="form-control" name="mS" id="mS">
+					  <option value="0">None</option>
+					  <option value="1">Solar (8am-4pm)</option>
+					  <option value="2">Manual / Timer</option>
+					</select>
+				</div>
+				<div class="form-group input-group smallgrp">
+					<label for="valve">Fermenting Mode</label>
+					<select class="form-control" name="mF" id="mF">
 					  <option value="0">None</option>
 					  <option value="1">Prefill</option>
 					  <option value="2">Sync</option>
