@@ -33,7 +33,7 @@
 #define ONE_WIRE_BUS 21
 #define VOLT_SENSOR  36
 #define STEAM_HEAT	 14
-#define HEADS_HEAT 	 22
+#define HEADS_HEAT 	 27
 #define STEAM_VALVE  13
 #define WASH_VALVE   12
 #define FEED_VALVE   26
