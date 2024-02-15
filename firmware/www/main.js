@@ -34,13 +34,13 @@
 			datareq = {};
 		}
 		// store op data in main screen readouts
-		$('#tH .lcdvalue').text(data.temp[0].toFixed(1)+' °C');
-		$('#tP .lcdvalue').text(data.temp[1].toFixed(1)+' °C');
-		$('#tM .lcdvalue').text(data.temp[2].toFixed(1)+' °C');
-		$('#tB .lcdvalue').text(data.temp[3].toFixed(1)+' °C');
-		$('#tS .lcdvalue').text(data.temp[5].toFixed(1)+' °C');
-		$('#tT .lcdvalue').text(data.temp[4].toFixed(1)+' °C');
-		$('#tF .lcdvalue').text(data.temp[6].toFixed(1)+' °C'); //only showing Ferm1 for now
+		$('#tH .lcdvalue').text(data.temp[0] > 0 ? data.temp[0].toFixed(1)+' °C' : '--');
+		$('#tP .lcdvalue').text(data.temp[1] > 0 ? data.temp[1].toFixed(1)+' °C' : '--');
+		$('#tM .lcdvalue').text(data.temp[2] > 0 ? data.temp[2].toFixed(1)+' °C' : '--');
+		$('#tB .lcdvalue').text(data.temp[3] > 0 ? data.temp[3].toFixed(1)+' °C' : '--');
+		$('#tS .lcdvalue').text(data.temp[5] > 0 ? data.temp[5].toFixed(1)+' °C' : '--');
+		$('#tT .lcdvalue').text(data.temp[4] > 0 ? data.temp[4].toFixed(1)+' °C' : '--');
+		$('#tF .lcdvalue').text(data.temp[6] > 0 ? data.temp[6].toFixed(1)+' °C' : '--'); //only showing Ferm1 for now
 		$('#pS .lcdvalue').text(data.steam+' W');
 		$('#pH .lcdvalue').text(data.heads+' W');
 		$('#fS .lcdvalue').text(data.flows[0]/20+' M');
