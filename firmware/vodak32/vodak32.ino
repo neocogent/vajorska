@@ -307,6 +307,7 @@ void sendJsonData(AsyncWebServerRequest *request){
 			cfg["mS"] = still_mode;
 			cfg["mF"] = ferm_mode;
 			cfg["fR"] = ferm_flow;
+			cfg["sF"] = max_steam_flow;
 			cfg["sR"] = steam_ohms;
 			cfg["sD"] = max_steam_duty*100/((1<<PWM_WIDTH)-1);
 			cfg["hR"] = heads_ohms;
