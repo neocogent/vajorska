@@ -57,7 +57,7 @@
 			$('#tid').append($('<option>', { value:n, text:'#'+n+' - '+e+' °C' } ));
 			});
 		$("#tid").prop("selectedIndex", now);
-		$('#volts_now').val(data.volts);
+		$('#volts_now').val(data.volts.toFixed(1));
 	}
 	function flowchg( e ) {
 		$('#flow').val( flowrates[ $('#rate').find(":selected").val() ][ $('#valve').find(":selected").val() ] );

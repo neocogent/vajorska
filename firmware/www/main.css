@@ -53,7 +53,7 @@ body { background:#AAA; }
 /*.cfggrp input { width:50px; }*/
 .cfggrp .input-group-append { width:80%; }
 .cfggrp label { width: 100%; }
-.smallgrp { width:150px; height:60px; float:left; }
+.smallgrp { width:180px; height:60px; float:left; }
 .smallgrp .input-group-append { /*width:80px;*/ }
 .smallgrp label { width: 100%; }
 .mediumgrp { width:340px; height:60px; float:left; }

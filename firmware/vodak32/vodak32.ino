@@ -57,6 +57,8 @@
 #define DEF_FERM_FLOW	 1000 // fermentation flow rate, based on 10L kegs and 10 day refills
 #define DEF_STEAM_FLOW 2.6  // max steam flow rate, arbitrarily taken from "tight" specs 	
 #define DEF_VOLTS_RUN  42   // solar voltage to run distill, wake from sleep
+#define ADC_MAX_FACTOR 0.94 // correction for non-linear high end of ADC readings
+#define ADC_OFFSET     0.15 // correction for non-linear low end of ADC readings
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -373,9 +375,10 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		nvs.putUInt("maxheads", max_heads_duty);
 		DBG_INFO("Saved power cfg.");
 	}
-  if(request->hasParam("vN", true) && volts_now != 0){
-		volts_max = atof(request->getParam("vN", true)->value().c_str()) * 4095 / volts_now; // calibrate with user vN value
+  if(request->hasParam("vN", true) && volts_now != 0){  // calibrate with user vN value
+		volts_max = atof(request->getParam("vN", true)->value().c_str()) * 4095 / analogRead(VOLT_SENSOR) * ADC_MAX_FACTOR + ADC_OFFSET; 
 		nvs.putFloat("voltsmax", volts_max);
+		OpLog("Volts Max: %.1f", volts_max);
 		DBG_INFO("Saved volts calibration.");
 	}
 	if(request->hasParam("valve", true)){
@@ -645,10 +648,14 @@ void setup() {
   
   // setup heater pwm channels
   DBG_INFO("Setting PWM channels.");
-  ledcSetup(STEAM_PWM_CHANNEL, PWM_HZ, PWM_WIDTH);
-  ledcAttachPin(STEAM_HEAT, STEAM_PWM_CHANNEL);  // use ledcWrite(STEAM_PWM_CHANNEL, duty_steam) to update
+  /*ledcSetup(STEAM_PWM_CHANNEL, PWM_HZ, PWM_WIDTH);
+  ledcAttachPin(STEAM_HEAT, STEAM_PWM_CHANNEL);
+  ledcWrite(STEAM_PWM_CHANNEL, 0);
   ledcSetup(HEADS_PWM_CHANNEL, PWM_HZ, PWM_WIDTH);
   ledcAttachPin(HEADS_HEAT, HEADS_PWM_CHANNEL);
+  ledcWrite(HEADS_PWM_CHANNEL, 0);*/
+  digitalWrite(STEAM_HEAT, LOW);
+  digitalWrite(HEADS_HEAT, LOW);
   
   // setup tick timer for sensor reads, valve timing and state machine
   timer = timerBegin(0, 80, true);
@@ -671,7 +678,7 @@ void loop() {
         tempC[i] = sensors.getTempC(sens_addrs[i]);
         DBG_DEBUG("Temp %d - %.1f", i, tempC[i]);
 			}
-    volts_now = analogRead(VOLT_SENSOR)*volts_max/4095;
+    volts_now = analogRead(VOLT_SENSOR)*volts_max/4095 + ADC_OFFSET;
     doSensorUpdate = false;
   }
 	if(doStateUpdate){ 
