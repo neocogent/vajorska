@@ -44,6 +44,7 @@ body { background:#AAA; }
 #cfgmenu { border-bottom: 1px solid #444; }
 .lcdclock { text-align: right; font-family:'lcd-font'; font-size: 35px; font-weight: 700; }
 .lcdvalue { font-family:'lcd-font'; font-size: 35px; font-weight: 700; }
+.lcdferm1, .lcdferm2 { font-family:'lcd-font'; font-size: 26px; font-weight: 700; line-height: 1.0; }
 .flow { text-align:center; font-size: 12px; }
 .rside { text-align:right; }
 .cancel { margin-right: 5px; background-color: #aaa; }

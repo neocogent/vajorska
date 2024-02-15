@@ -20,6 +20,7 @@
 			$('#mS').val(data.cfg.mS);
 			$('#mF').val(data.cfg.mF);
 			$('#fR').val(data.cfg.fR);
+			$('#sF').val(data.cfg.sF);
 			$('#sR').val(data.cfg.sR);
 			$('#sD').val(data.cfg.sD);
 			$('#hR').val(data.cfg.hR);
@@ -40,12 +41,15 @@
 		$('#tB .lcdvalue').text(data.temp[3] > 0 ? data.temp[3].toFixed(1)+' °C' : '--');
 		$('#tS .lcdvalue').text(data.temp[5] > 0 ? data.temp[5].toFixed(1)+' °C' : '--');
 		$('#tT .lcdvalue').text(data.temp[4] > 0 ? data.temp[4].toFixed(1)+' °C' : '--');
-		$('#tF .lcdvalue').text(data.temp[6] > 0 ? data.temp[6].toFixed(1)+' °C' : '--'); //only showing Ferm1 for now
+		$('#tF .lcdferm1').text(data.temp[6] > 0 ? '1: '+data.temp[6].toFixed(1)+' °C' : '--'); 
+		$('#tF .lcdferm2').text(data.temp[7] > 0 ? '2: '+data.temp[7].toFixed(1)+' °C' : '--'); 
 		$('#pS .lcdvalue').text(data.steam+' W');
 		$('#pH .lcdvalue').text(data.heads+' W');
 		$('#fS .lcdvalue').text(data.flows[0]/20+' M');
-		$('#fW .lcdvalue').text(data.flows[1]/20+' M');
-		$('#fF .lcdvalue').text(data.flows[3]/20+' M'); // only showing Ferm1 for now
+		$('#fW .lcdvalue').text(data.flows[1]/20+' M'); // missing feed flow for now
+		$('#fF .lcdferm1').text(data.flows[3]/20+' M');
+		$('#fF .lcdferm2').text(data.flows[4]/20+' M');
+		
 		tanklevels.pop();
 		tanklevels.push(data.tn);
 		$('#volume').val( tanklevels[ $('#level').find(":selected").val() ][ $('#tank').find(":selected").val() ] );
