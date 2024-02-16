@@ -47,8 +47,8 @@
 		$('#pH .lcdvalue').text(data.heads+' W');
 		$('#fS .lcdvalue').text(data.flows[0]/20+' M');
 		$('#fW .lcdvalue').text(data.flows[1]/20+' M'); // missing feed flow for now
-		$('#fF .lcdferm1').text(data.flows[3]/20+' M');
-		$('#fF .lcdferm2').text(data.flows[4]/20+' M');
+		$('#fF .lcdferm1').text('1: '+data.flows[3]/20+' M');
+		$('#fF .lcdferm2').text('2: '+data.flows[4]/20+' M');
 		
 		tanklevels.pop();
 		tanklevels.push(data.tn);
