@@ -1,7 +1,7 @@
 (function($){
 	
 	var refresh = null, poll = 10000, datareq = { 'cfg' : true };
-	var flowrates = [];
+	//var flowrates = [];
 	
 	function Refresh() {
 		$.get('/data', datareq, UpdateData )
@@ -83,7 +83,7 @@
 		e.preventDefault();
 	}
 	function voltset( e ) {
-		$.post( '/cfg', { "vN":$('#volts_now').val() }, function(data) {});
+		$.post( '/cfg', { "vN":$('#volts_now').val() }, function(data) { UpdateData(data); });
 		e.preventDefault();
 	}
 	function flowset( e ) {
@@ -91,7 +91,7 @@
 				"valve": $('#valve').find(":selected").val(), 
 				"rate": $('#rate').find(":selected").val(), 
 				"flow": $('#flow').val() 
-				}, function(data) {});
+				}, function(data) { UpdateData(data); });
 		e.preventDefault();
 	}
 	function tankset( e ) {
@@ -99,14 +99,14 @@
 				"tank": $('#tank').find(":selected").val(), 
 				"level": $('#level').find(":selected").val(), 
 				"volume": $('#volume').val() 
-				}, function(data) {});
+				}, function(data) { UpdateData(data); });
 		e.preventDefault();
 	}
 	function senset( e ) {
 		$.post( '/cfg', { 
 				"sid": $('#sid').find(":selected").val(), 
 				"tid": $('#tid').find(":selected").val() 
-				}, function(data) {});
+				}, function(data) { UpdateData(data); });
 		e.preventDefault();
 	}
 	
