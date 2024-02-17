@@ -50,7 +50,7 @@
 #define SENSOR_UPDATE_SECS  10 // interval for sensor updates (secs)
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
 #define FLOW_UPDATE_SECS		10 // interval for still flow cycle (secs)(wash, steam valves)
-#define FERM_UPDATE_SECS		900 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
+#define FERM_UPDATE_SECS		600 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
 #define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
@@ -634,7 +634,8 @@ void setup() {
   SPIFFS.remove("/oplog.old");
 	SPIFFS.rename("/oplog", "/oplog.old");
   OpLog("Vodak32 - version %d.%d.%d", VER_MAJOR, VER_MINOR, VER_PATCH);
-  OpLog("Still mode: %s, Ferm mode: %s.", still_modes_msg[still_mode], ferm_modes_msg[ferm_mode]);
+  OpLog("Still mode: %s @ %d seconds.", still_modes_msg[still_mode], FLOW_UPDATE_SECS);
+  OpLog("Ferm mode: %s @ %d seconds.", ferm_modes_msg[ferm_mode], FERM_UPDATE_SECS);
   
   // routes for web app
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
