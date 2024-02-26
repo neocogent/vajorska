@@ -12,10 +12,10 @@
 #include <stdarg.h>
 
 #define DBG_ENABLE_ERROR
-#define DBG_ENABLE_WARNING
-#define DBG_ENABLE_INFO
-#define DBG_ENABLE_DEBUG
-#define DBG_ENABLE_VERBOSE
+//#define DBG_ENABLE_WARNING
+//#define DBG_ENABLE_INFO
+//#define DBG_ENABLE_DEBUG
+//#define DBG_ENABLE_VERBOSE
 #include <107-Arduino-Debug.hpp>
 
 // version
@@ -135,6 +135,7 @@ long  gmtOffset_sec;
 int   daylightOffset_sec;
 hw_timer_t *timer = NULL;
 uint8_t out_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_VALVE, XTRA_HEAT, STEAM_HEAT, HEADS_HEAT };
+uint8_t valve2flow[] = { FLOW_FEED, FLOW_FERM1, FLOW_FERM2, FLOW_WASH, FLOW_STEAM }; // cvt valve index to flow index
 int numberOfSensors;
 float volts_max, volts_now, volts_run;
 float steam_ohms, heads_ohms;
@@ -450,11 +451,22 @@ void onRunChg(AsyncWebServerRequest *request){
 	}
 	if(request->hasParam("open", true)){
 		uint8_t valve = atoi(request->getParam("open", true)->value().c_str());
-		uint16_t tenths = atof(request->getParam("secs", true)->value().c_str())*10;
+		uint16_t tenths = atof(request->getParam("val", true)->value().c_str())*10;
 		if(tenths == 0)
 			tenths = 10;
+		if(atoi(request->getParam("mode", true)->value().c_str()) == 1){ // treat value as double-drops and calc tenths
+			float flow_now = flow_rates[valve2flow[valve]][FLOW_RATE_LOW] + 
+			(flow_rates[valve2flow[valve]][FLOW_RATE_HIGH]-flow_rates[valve2flow[valve]][FLOW_RATE_LOW]) 
+		  * ((float)tank_levels[valve2flow[valve]][TANK_LEVEL_NOW]/(float)tank_levels[valve2flow[valve]][TANK_LEVEL_FULL]); // drops/min now
+		  tenths = tenths*2 * 600 / flow_now + 0.5; // tenths to open valve
+		}
 		on_fets[valve-1] = tenths+1; // will open valve on next tick, with count down to close
 		DBG_INFO("Open valve %s for %d tenths.", valves_msg[valve-1], tenths);
+	}
+	if(request->hasParam("close", true)){
+		uint8_t valve = atoi(request->getParam("close", true)->value().c_str());
+		on_fets[valve-1] = 1; // will close valve on next tick
+		DBG_INFO("Close valve %s.", valves_msg[valve-1]);
 	}
 	request->send(200);
 }
