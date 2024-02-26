@@ -75,11 +75,15 @@
 			e.preventDefault();
 			showmain();
 	}
-	function valveopen( e ) {
-		$.post( '/run', { 
-			"open": e.target.id[1], 
-			"secs": $('#'+e.target.id+'secs').val() 
-			}, function(data) {});
+	function valvechg( e ) {
+		if(e.target.id[2] == 'o')
+			$.post( '/run', { 
+				"open": e.target.id[1], 
+				"mode": $('#'+e.target.id.slice(0,2)+'mode').find(":selected").val(),
+				"val": $('#'+e.target.id.slice(0,2)).val()  
+				}, function(data) {});
+		else
+			$.post( '/run', { "close": e.target.id[1] }, function(data) {});
 		e.preventDefault();
 	}
 	function voltset( e ) {
@@ -127,7 +131,7 @@
 		$('.menucfg').on('click', showmain );
 		$('.cancel').on('click', showmain );
 		$('.update').on("submit", postCfg);
-		$('.btnvalve').on('click', valveopen );
+		$('.btnvalve').on('click', valvechg );
 		$('#voltset').on('click', voltset );
 		$('#flowset').on('click', flowset );
 		$('#tankset').on('click', tankset );
