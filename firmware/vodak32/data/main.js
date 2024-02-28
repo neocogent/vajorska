@@ -146,7 +146,7 @@
 		
 		$("a[href='#pg-log']").on('show.bs.tab', function(e) {
 			$.get( '/oplog', {}, function(data) {
-				$('#oplog').text(data);
+				$('#oplog').val(data);
 				});
 		});
 
