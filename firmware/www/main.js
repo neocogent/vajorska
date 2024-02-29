@@ -52,7 +52,8 @@
 		
 		tanklevels.pop();
 		tanklevels.push(data.tn);
-		$('#volume').val( tanklevels[ $('#level').find(":selected").val() ][ $('#tank').find(":selected").val() ] );
+		if(!$('#volume').is(":focus"))
+			$('#volume').val( tanklevels[ $('#level').find(":selected").val() ][ $('#tank').find(":selected").val() ] );
 		
 		// add temps cfg dropdown with ids
 		var now = $("#tid").prop("selectedIndex");
@@ -61,7 +62,8 @@
 			$('#tid').append($('<option>', { value:n, text:'#'+n+' - '+e+' °C' } ));
 			});
 		$("#tid").prop("selectedIndex", now);
-		$('#volts_now').val(data.volts.toFixed(1));
+		if(!$('#volts_now').is(":focus"))
+			$('#volts_now').val(data.volts.toFixed(1));
 	}
 	function flowchg( e ) {
 		$('#flow').val( flowrates[ $('#rate').find(":selected").val() ][ $('#valve').find(":selected").val() ] );
