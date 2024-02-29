@@ -51,13 +51,12 @@
 #define STATE_CYCLE_SECS    30 // interval for state machine cycle (secs)
 #define FLOW_UPDATE_SECS		10 // interval for still flow cycle (secs)(wash, steam valves)
 #define FERM_UPDATE_SECS		600 // interval for fermentation valve drip cycle (secs)(feed, ferm1, ferm2 valves)
-#define DEF_VOLTS_MAX       61.4  // based on resistor divider values: 3.2/Vmax = 2.2/(40+2.2) 
+#define DEF_VOLTS_BITS       45  // based on resistor divider values: 4095/Vmax
 #define DEF_STEAM_OHMS 10   // calc based on maxV and maxP, 36*36/129.6 for 36V system
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
 #define DEF_FERM_FLOW	 1000 // fermentation flow rate, based on 10L kegs and 10 day refills
 #define DEF_STEAM_FLOW 2.6  // max steam flow rate, arbitrarily taken from "tight" specs 	
 #define DEF_VOLTS_RUN  42   // solar voltage to run distill, wake from sleep
-#define ADC_MAX_FACTOR 0.94 // correction for non-linear high end of ADC readings
 #define ADC_OFFSET     0.15 // correction for non-linear low end of ADC readings
 
 // pwm channels
@@ -137,7 +136,7 @@ hw_timer_t *timer = NULL;
 uint8_t out_pins[] = { FEED_VALVE, FERM1_VALVE, FERM2_VALVE, WASH_VALVE, STEAM_VALVE, XTRA_HEAT, STEAM_HEAT, HEADS_HEAT };
 uint8_t valve2flow[] = { FLOW_FEED, FLOW_FERM1, FLOW_FERM2, FLOW_WASH, FLOW_STEAM }; // cvt valve index to flow index
 int numberOfSensors;
-float volts_max, volts_now, volts_run;
+float volts_bits, volts_now, volts_run;
 float steam_ohms, heads_ohms;
 float ferm_flow, max_steam_flow;
 uint8_t duty_steam, duty_heads, max_steam_duty, max_heads_duty, still_mode, ferm_mode;
@@ -378,10 +377,10 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		DBG_INFO("Saved power cfg.");
 	}
   if(request->hasParam("vN", true) && volts_now != 0){  // calibrate with user vN value
-		volts_max = atof(request->getParam("vN", true)->value().c_str()) * 4095 / analogRead(VOLT_SENSOR) * ADC_MAX_FACTOR + ADC_OFFSET; 
-		nvs.putFloat("voltsmax", volts_max);
-		OpLog("Volts Max: %.1f", volts_max);
-		DBG_INFO("Saved volts calibration.");
+		volts_bits = analogRead(VOLT_SENSOR) / (atof(request->getParam("vN", true)->value().c_str()) - ADC_OFFSET); // bits per volt
+		nvs.putFloat("voltsmax", volts_bits);
+		OpLog("Volts Bits: %.1f", volts_bits);
+		DBG_INFO("Saved voltage calibration.");
 	}
 	if(request->hasParam("valve", true)){
 		char key[] = "Fxx";
@@ -600,7 +599,7 @@ void setup() {
 
   // read config values
   DBG_INFO("Loading config.");
-  volts_max = nvs.getFloat("voltsmax", DEF_VOLTS_MAX);
+  volts_bits = nvs.getFloat("voltsmax", DEF_VOLTS_BITS);
   steam_ohms = nvs.getFloat("steamohms", DEF_STEAM_OHMS);
   heads_ohms= nvs.getFloat("headsohms", DEF_HEADS_OHMS);
   ferm_flow = nvs.getFloat("fermflow", DEF_FERM_FLOW);
@@ -692,7 +691,7 @@ void loop() {
         tempC[i] = sensors.getTempC(sens_addrs[i]);
         DBG_DEBUG("Temp %d - %.1f", i, tempC[i]);
 			}
-    volts_now = analogRead(VOLT_SENSOR)*volts_max/4095 + ADC_OFFSET;
+    volts_now = analogRead(VOLT_SENSOR) / volts_bits + ADC_OFFSET;
     doSensorUpdate = false;
   }
 	if(doStateUpdate){ 
