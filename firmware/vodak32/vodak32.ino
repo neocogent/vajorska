@@ -56,8 +56,8 @@
 #define DEF_HEADS_OHMS 31.6	// calc based on maxV and element R, 36*36/41 for 36V system
 #define DEF_FERM_FLOW	 1000 // fermentation flow rate, based on 10L kegs and 10 day refills
 #define DEF_STEAM_FLOW 2.6  // max steam flow rate, arbitrarily taken from "tight" specs 	
-#define DEF_VOLTS_RUN  42   // solar voltage to run distill, wake from sleep
-#define ADC_OFFSET     0.15 // correction for non-linear low end of ADC readings
+#define DEF_VOLTS_RUN  44   // solar voltage to run distill, wake from sleep
+#define ADC_OFFSET     10   // correction offset for flat low end of ADC readings
 
 // pwm channels
 #define STEAM_PWM_CHANNEL	0
@@ -377,7 +377,7 @@ void onSaveCfg(AsyncWebServerRequest *request){
 		DBG_INFO("Saved power cfg.");
 	}
   if(request->hasParam("vN", true) && volts_now != 0){  // calibrate with user vN value
-		volts_bits = analogRead(VOLT_SENSOR) / (atof(request->getParam("vN", true)->value().c_str()) - ADC_OFFSET); // bits per volt
+		volts_bits = (analogRead(VOLT_SENSOR)-ADC_OFFSET) / atof(request->getParam("vN", true)->value().c_str()); // bits per volt
 		nvs.putFloat("voltsmax", volts_bits);
 		OpLog("Volts Bits: %.1f", volts_bits);
 		DBG_INFO("Saved voltage calibration.");
@@ -691,7 +691,7 @@ void loop() {
         tempC[i] = sensors.getTempC(sens_addrs[i]);
         DBG_DEBUG("Temp %d - %.1f", i, tempC[i]);
 			}
-    volts_now = analogRead(VOLT_SENSOR) / volts_bits + ADC_OFFSET;
+    volts_now = (analogRead(VOLT_SENSOR)-ADC_OFFSET) / volts_bits;
     doSensorUpdate = false;
   }
 	if(doStateUpdate){ 
