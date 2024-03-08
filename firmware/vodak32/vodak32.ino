@@ -458,9 +458,9 @@ void onRunChg(AsyncWebServerRequest *request){
 		if(tenths == 0)
 			tenths = 10;
 		if(atoi(request->getParam("mode", true)->value().c_str()) == 1){ // treat value as double-drops and calc tenths
-			float flow_now = flow_rates[valve2flow[valve]][FLOW_RATE_LOW] + 
-			(flow_rates[valve2flow[valve]][FLOW_RATE_HIGH]-flow_rates[valve2flow[valve]][FLOW_RATE_LOW]) 
-		  * ((float)tank_levels[valve2flow[valve]][TANK_LEVEL_NOW]/(float)tank_levels[valve2flow[valve]][TANK_LEVEL_FULL]); // drops/min now
+			float flow_now = flow_rates[valve2flow[valve-1]][FLOW_RATE_LOW] + 
+			(flow_rates[valve2flow[valve-1]][FLOW_RATE_HIGH]-flow_rates[valve2flow[valve-1]][FLOW_RATE_LOW]) 
+		  * ((float)tank_levels[valve2flow[valve-1]][TANK_LEVEL_NOW]/(float)tank_levels[valve2flow[valve-1]][TANK_LEVEL_FULL]); // drops/min now
 		  tenths = tenths*2 * 600 / flow_now + 0.5; // tenths to open valve
 		}
 		on_fets[valve-1] = tenths+1; // will open valve on next tick, with count down to close
